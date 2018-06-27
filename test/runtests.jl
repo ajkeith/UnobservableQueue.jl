@@ -33,11 +33,11 @@ using Distributions
         seed = 3001 # rng seed
         s2 = sim(ncust, timelimit, seed)
         q2 = queue(c, adist, sdist)
-        df = runsim(s2, q2)
-        @test mean(df[:dtime] - df[:stime]) ≈ mean(rand(sdist, 10_000)) atol = 100
-        @test df[:atime] |> diff |> mean ≈ mean(rand(adist, 10_000)) atol = 100
-        @test all(diff(df[:atime]) .> 0)
-        @test all(diff(sort(df, :dorder)[:dtime]) .> 0)
+        df2 = runsim(s2, q2)
+        @test mean(df2[:dtime] - df2[:stime]) ≈ mean(rand(sdist, 10_000)) atol = 100
+        @test df2[:atime] |> diff |> mean ≈ mean(rand(adist, 10_000)) atol = 100
+        @test all(diff(df2[:atime]) .> 0)
+        @test all(diff(sort(df2, :dorder)[:dtime]) .> 0)
     end
 
     @testset "Server Estimation" begin
@@ -66,7 +66,25 @@ using Distributions
         # Variance algorithm
 
         # Order-based algorithm
-
+        c = 15 # number of servers
+        μa = (1 / c) * 0.99
+        μs = 1 / c
+        σ = 0.9
+        adist = LogNormal(exp(1/μ), σ) # arrival distribution
+        sdist = LogNormal(exp(1/μ), σ) # service distribution (single server)
+        ncust = 10_000 # total number of customers generated
+        timelimit = 10_000 # time limit for simulation
+        seed = 3001 # rng seed
+        s2 = sim(ncust, timelimit, seed)
+        q2 = queue(c, adist, sdist)
+        df2 = runsim(s2, q2)
+        outorder1 = sort(df1, :dorder)[:aorder]
+        outorder2 = sort(df2, :dorder)[:aorder]
+        outorder3 = randperm(1_000)
+        @test c_order(outorder3) == c_order_slow(outorder3)
+        @test c_order([1,3,5]) == 3
+        @test c_order(outorder1) == 2
+        
         # Comparison
     end
 end

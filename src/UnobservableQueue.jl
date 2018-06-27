@@ -114,9 +114,9 @@ end
 
 # Deltamax Estimator
 # Estimate the number of servers using the Deltamax algorithm
-# Input: departure order
+# Input: arrival order sorted by departure order
 # Output: estimated number of servers
-function c_deltamax(out_order::Vector{Number})
+function c_deltamax(out_order::Vector{Int64})
   N = size(out_order, 1)
   currmax = out_order[1]
   deltamax = 0
@@ -126,4 +126,109 @@ function c_deltamax(out_order::Vector{Number})
     currmax = nextmax
   end
   deltamax
+end
+
+# Order-based Estimator
+# Estimate the number of servers using the Order-based algorithm
+# Input: arrival order sorted by departure order
+# Output: estimated number of servers
+function c_order_slow(out_order::Vector{Int64})
+    N = size(out_order, 1)
+    currmax = 0
+    nservers = 0
+    for i = 1:N
+        currmax = max(out_order[i], currmax)
+        custall = Set(1:currmax)
+        custdeparted = Set(out_order[1:i])
+        custservice = setdiff(custall, custdeparted)
+        nservers = max(length(custservice) + 1, nservers)
+    end
+    nservers
+end
+
+function c_order(out_order::Vector{Int64})
+    N = size(out_order, 1)
+    currmax = 0
+    noccupied = 0
+    nservers = 0
+    for i = 1:N
+        nextmax = max(out_order[i], currmax)
+        if out_order[i] < currmax
+            noccupied = noccupied - 1
+        else
+            noccupied = noccupied + nextmax - currmax - 1
+        end
+        currmax = nextmax
+        nservers = max(nservers, noccupied + 1)
+    end
+    nservers
+end
+
+# Summary Estimator
+# Estimate the number of servers using the Variance, Entropy, Uninformed, and
+# Variance-Uninformed methods
+# Input: arrival times, departure times, and the max number of servers
+# Output: estimated number of servers for each method
+# Note: the entropy method is sensitive to domain parameters
+function c_est(A::Vector{Float64}, D::Vector{Float64}, cmax::Int64)
+  # Initilaize data structures and functions
+  N = size(D, 1)
+  B̂ = zeros(N)
+  VS = zeros(cmax, 4) # var, ent, none, combined
+  max_undef = 0
+  f(X) = var(X) * (N-1) # variance method
+  h(X) = entropy(diff(X(0:0.01:1)) / sum(diff(X(0:0.01:1)))) # entropy method
+
+  ## Grid Search
+  for c = 1:cmax
+    B̂[1:c] = A[1:c]
+    for i = (c + 1):N
+      Dₖ = sort(D[1:(i - 1)])
+      B̂[i] = max(A[i], Dₖ[i - c])
+    end
+    Ŝ = D[1:N] - B̂
+    eŜ = ecdf(Ŝ)
+    if any(Ŝ .< 0)
+      VS[c, 1:4] = -1
+      max_undef = c
+    else
+      VS[c, 1] = f(Ŝ) # var
+      VS[c, 2] = h(eŜ) # ent
+      # no update required # uninf
+      VS[c, 4] = f(Ŝ) # uninf-var
+    end
+  end
+  (r1, r2, r3, r4) = (99, 99, 99, 99) # initialize result to 99 for debugging
+
+  # var method
+  try
+    r1 = findin(VS[:, 1], minimum(filter(x -> x >= 0, VS[:, 1])))[1]
+  catch
+    r1 = 1
+  end
+
+  # entropy method
+  try
+    r2 = findin(VS[:, 2], minimum(filter(x -> x >= 0, VS[:, 2])))[1]
+  catch
+    r2 = 1
+  end
+
+  # uninformed method
+  r3 = max_undef + 1
+
+  # uninformed-var method
+  try
+    if max_undef > 0
+      r4 = max_undef + 1
+    else
+      c_min = minimum(filter(x -> x >= 0, VS[:, 4]))
+      r4 = findin(VS[:, 4], c_min)[1]
+      end
+  catch
+    r4 = 1
+  end
+
+  # return estimates
+  (r1, r2, r3, r4, VS)
 end
