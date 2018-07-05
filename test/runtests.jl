@@ -63,8 +63,6 @@ using Distributions
         o2 = [1,3,6,5,4]
         @test c_deltamax(o1) == 2 && c_deltamax(o2) == 3
 
-        # Variance algorithm
-
         # Order-based algorithm
         c = 15 # number of servers
         μa = (1 / c) * 0.99
@@ -84,7 +82,28 @@ using Distributions
         @test c_order(outorder3) == c_order_slow(outorder3)
         @test c_order([1,3,5]) == 3
         @test c_order(outorder1) == 2
-        
+
+        # Variance algorithm
+        cmax = 19
+        A1, A2 = df1[:atime][1:1000], df2[:atime][1:1000]
+        D1, D2 = df1[:dtime][1:1000], df2[:dtime][1:1000]
+        (cvar1, cunf1, VS1) = c_var_unf_slow(A1, D1, cmax)
+        (cvar2, cunf2, VS2) = c_var_unf_slow(A2, D2, cmax)
+        @test cvar1 == 2 && cunf1 == 2
+
+        # Need to check against DOE results
+        # # Uninformed vs Order-based
+        # results = zeros(100,4);
+        # ind = 0
+        # for i = 20:10:1000
+        #         ind += 1
+        #     results[ind,1] = c_order(outorder1[1:i])
+        #     results[ind,2] = c_var_unf(A1[1:i], D1[1:i], cmax)[2]
+        #     results[ind,3] = c_order(outorder2[1:i])
+        #     results[ind,4] = c_var_unf(A2[1:i], D2[1:i], cmax)[2]
+        # end
+        # results
+
         # Comparison
     end
 end
