@@ -1,7 +1,7 @@
 include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
 using Base.Test
 using Distributions
-# using Plots; gr()
+using Plots; gr()
 
 @testset "Unobservable Queue" begin
     @testset "Queue Simulation" begin
@@ -107,9 +107,10 @@ using Distributions
         obs_max = 1_000 # max observations available
         time_limit = 10_000 # max simulation time
         ϵ = 0.05 # convergence quality
-        window = 20 # observation window for convergence and estimates
+        window = 20 # observation window for convergence estimate
+        window_detail = 50 # observation window for error estimate
         step = 20 # how many observations to skip while calculating convergence
-        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, step)
+        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
         c = settings[2,5] # number of servers
         aname = convert(String, settings[2,2])
         sname = convert(String, settings[2,3])
@@ -123,44 +124,59 @@ using Distributions
         df1 = runsim(s1, q1)
         output = disorder(df1, c)
         (conv, conv_meas, ests, ests_meas) = convergence(param_inf, output, c)
-        println(conv)
         @test (conv[1] > 0) && (conv[1] < 400) && (conv[2] == 0)
         @test (conv[1] == conv_meas[1]) && (conv_meas[2] == 0)
+
         # Error estimation
-
-        # # Inference
-        # fn1 = "data\\design.csv"
-        # settings = readcsv(fn1, header = true)[1] # DOE runs
-        # n_runs = 10 # limit runs for debugging and timing
-        # n_methods = 6 # number of methods to compare
-        # max_servers = 19 # max number of servers
-        # obs_max = 1_000 # max observations available
-        # time_limit = 10_000 # max simulation time
-        # ϵ = 0.05 # convergence quality
-        # window = 10 # observation window for convergence and estimates
-        # step = 20 # how many observations to skip while calculating convergence
-        # param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, ϵ, window, step)
-        #
-        # obs_limit = settings[i, 4] # number of observations
-        # c_true = settings[i, 5] # actual number of servers
-        # fn2 = "QueueOutv18\\out" * "$i" * ".csv"
-        # q_out = readcsv(fn2, header = true)[1] # raw queue simulation results
-        # output = disorder(q_out, settings[i,:]) # queue sim results with noise
-        # lim = 20 # need at least 20 obs (since MAX_SERVERS = 19)
-
-        # Need to check against DOE results
-        # # Uninformed vs Order-based
-        # results = zeros(100,4);
-        # ind = 0
-        # for i = 20:10:1000
-        #         ind += 1
-        #     results[ind,1] = c_order(outorder1[1:i])
-        #     results[ind,2] = c_var_unf(A1[1:i], D1[1:i], cmax)[2]
-        #     results[ind,3] = c_order(outorder2[1:i])
-        #     results[ind,4] = c_var_unf(A2[1:i], D2[1:i], cmax)[2]
-        # end
-        # results
+        settings = ["Order" "Exponential" "Exponential" 400 9 0.9;
+                    "Order" "Uniform" "LogNormal" 400 15 0.9;
+                    "Order" "LogNormal" "LogNormal" 60 9 0.9]
+        n_runs = 10 # limit runs for debugging and timing
+        n_methods = 3 # number of methods to compare
+        max_servers = 19 # max number of servers
+        obs_max = 1_000 # max observations available
+        time_limit = 10_000 # max simulation time
+        ϵ = 0.05 # convergence quality
+        window = 20 # observation window for convergence estimate
+        window_detail = 50 # observation window for error estimate
+        step = 20 # how many observations to skip while calculating convergence
+        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
+        ncust = 1_000 # total number of customers generated
+        timelimit = 1_000 # time limit for simulation
+        seed = 8710 # rng seed
+        ind = 3
+        c = settings[ind,5] # number of servers
+        aname = convert(String, settings[ind,2])
+        sname = convert(String, settings[ind,3])
+        obs_limit = settings[ind,4]
+        rho = settings[ind,6]
+        (adist, sdist) = builddist(c, aname, sname, rho)
+        s1 = Sim(ncust, timelimit, seed)
+        q1 = Queue(c, adist, sdist)
+        df1 = runsim(s1, q1)
+        output = disorder(df1, c)
+        (err, err_meas, detail, detail_meas) = esterror(param_inf, output, obs_limit, c)
+        @test err[1] == 0 && err[2] >= 1
+        @test err_meas[1] == 0 && err_meas[2] >= 8
 
         # Comparison
+        settings = ["Order" "Exponential" "Exponential" 400 9 0.9;
+                    "Order" "Uniform" "LogNormal" 400 15 0.9;
+                    "Order" "LogNormal" "LogNormal" 60 9 0.9]
+        n_runs = size(settings,1) # experimental runs
+        n_methods = 3 # number of methods to compare
+        max_servers = 19 # max number of servers
+        obs_max = 1_000 # max observations available
+        time_limit = 10_000 # max simulation time
+        ϵ = 0.05 # convergence quality
+        window = 20 # observation window for convergence estimate
+        window_detail = 50 # observation window for error estimate
+        step = 20 # how many observations to skip while calculating convergence
+        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
+        (rerr, rconv, rraw) = infer(param_inf)
+        @test mean(rerr[1][:,1]) <= 0.1 && mean(rerr[1][:,2]) >= 0.5
+        @test mean(rerr[2][:,1]) <= 0.1 && mean(rerr[1][:,2]) >= 0.5
+        @test mean(rconv[1][:,1]) <= 40 && (mean(rconv[1][:,2]) == 0 || mean(rconv[1][:,2]) >= 200)
+        @test mean(rconv[2][:,1]) <= 40 && (mean(rconv[1][:,2]) == 0 || mean(rconv[1][:,2]) >= 200)
     end
 end

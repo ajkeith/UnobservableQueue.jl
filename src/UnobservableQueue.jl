@@ -25,7 +25,8 @@ mutable struct Paraminf
     obs_max::Int64 # max observations available
     time_limit::Int64 # max number of sim reps
     ϵ::Float64 # convergence quality
-    window::Int64 # observation window for convergence and estimates
+    window::Int64 # observation window for convergence estimate
+    window_detail::Int64 # observation window for error estimate
     step::Int64 # how many observations to skip while calculating convergence
 end
 
@@ -334,86 +335,97 @@ function convergence(param_inf::Paraminf, queue_output::DataFrame, c_true::Int64
     (conv_true, conv_meas, ests_true, ests_meas)
 end
 
-# # Calculate All Estimates
-# # Estimate the obs to converge and the estimation error using the Deltamax,
-# # Order, Variance, Uninformed methods for true, noisy departure times, and
-# # noisy departure order
-# # Input: NA
-# # Output: obs to converge and estimation error for each method and noise level
-# function infer(param_inf::Paraminf)
-#     settings = param_inf.settings
-#     n_runs = param_inf.n_runs
-#     n_methods = param_inf.m_methods
-#     max_servers = param_inf.max_servers
-#     obs_max = param_inf.obs_max
-#     time_limit = param_inf.time_limit
-#     ϵ = param_inf.ϵ
-#     window = param_inf.window
-#     step = param_inf.step
-#     raw_true = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
-#     raw_meas = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
-#     conv_true = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
-#     conv_meas = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
-#     error_true = zeros(n_runs, n_methods) # c estimate with true departure times
-#     error_meas = zeros(n_runs, n_methods) # c estimate with noisy departure times
-#
-#     # caculate each metric for each DOE run
-#     for i = 1:n_runs
-#         # initialize constants and data structures
-#         print("Run $i: ") # status update
-#         aname = settings[i, 2] # arrival distribution
-#         sname = settings[i, 3] # service distribution
-#         obs_limit = settings[i, 4] # number of observations
-#         c_true = settings[i, 5] # actual number of servers
-#         rho = settings[i, 6] # traffic intensity
-#         (adist, sdist) = builddist(c_true, aname, sname, rho)
-#         q = Queue(c_true, adist, sdist)
-#         s = Sim(obs_max, time_limit, rand(1:1000))
-#         q_out = runsim(s,q)
-#         queue_output = disorder(q_out, c_true) # queue sim results with noise
-#         array_size = floor(Int64, (obs_max - 20) / step)
-#         ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
-#         ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
-#         ests_err = zeros(Int64, array_size, n_methods) # c estimates by obs by run
-#
-#         # calculate number of observations until convergence
-#         print("conv, ")
-#         (conv_true_single, conv_meas_single) = convergence(param_inf, param_run, queue_output)
-#         conv_true[i,:] = conv_true_single
-#         conv_meas[i,:] = conv_meas_single
-#     end
-#
-#     # calculate estimation error
-#     println("est")
-#     window_detail = 50
-#     ind_l = Int64(obs_limit)
-#     ind_u = Int64(obs_limit  + window_detail - 1)
-#     detail_true = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
-#     detail_meas = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
-#     detail_err = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
-#     ind = 0
-#     for lim = ind_l:ind_u
-#       ind += 1
-#       # true departure
-#       ro = c_order(Array(output[:DepartOrder])[1:lim])
-#       (rv, ru, VS) = c_var_unf(Array(output[:Arrive])[1:lim], Array(output[:Depart])[1:lim], max_servers)
-#       # time error
-#       rd_meas = copy(rd)
-#       (rv_meas, re_meas, rn_meas, rc_meas) = c_est(Array(output[:Arrive])[1:lim], Array(output[:DepartMeas])[1:lim], max_servers)
-#       # record results
-#       detail_true[ind, :] = [ro rv ru]
-#       detail_meas[ind, :] = [ro_meas rv_meas ru_meas]
-#     end
-#     for j = 1:n_methods
-#       error_true[i, j] = mean(abs.(detail_true[:, j] - c_true))
-#       error_meas[i, j] = mean(abs.(detail_meas[:, j] - c_true))
-#       raw_true[i, j] = ests_true[:, j]
-#       raw_meas[i, j] = ests_meas[:, j]
-#     end
-#   end
-#
-#   resp_error = (error_true, error_meas, error_err)
-#   resp_conv = (conv_true, conv_meas, conv_err)
-#   resp_raw = (raw_true, raw_meas, raw_err)
-#   (resp_error, resp_conv, resp_raw)
-# end
+# calculate estimation error
+function esterror(param_inf::Paraminf, output::DataFrame, obs_limit::Int64, c_true::Int64)
+    window_detail = param_inf.window_detail
+    n_methods = param_inf.n_methods
+    max_servers = param_inf.max_servers
+    ind_l = Int64(obs_limit)
+    ind_u = Int64(obs_limit  + window_detail - 1)
+    detail_true = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
+    detail_meas = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
+    error_true = zeros(n_methods)
+    error_meas = zeros(n_methods)
+    ind = 0
+    for lim = ind_l:ind_u
+      ind += 1
+      # true departure
+      out_order = sort(output[1:lim,:], :DepartOrder)[:ArriveOrder]
+      ro = c_order(out_order)
+      (rv, ru, VS) = c_var_unf(output[:Arrive][1:lim], output[:Depart][1:lim], max_servers)
+      # time error
+      out_order_meas = sort(output[1:lim,:], :DepartMeas)[:ArriveOrder]
+      ro_meas = c_order(out_order_meas)
+      (rv_meas, ru_meas, VS_meas) = c_var_unf(output[:Arrive][1:lim], output[:DepartMeas][1:lim], max_servers)
+      # record results
+      detail_true[ind, :] = [ro rv ru]
+      detail_meas[ind, :] = [ro_meas rv_meas ru_meas]
+    end
+    for j = 1:n_methods
+        error_true[j] = mean(abs.(detail_true[:, j] - c_true))
+        error_meas[j] = mean(abs.(detail_meas[:, j] - c_true))
+    end
+    (error_true, error_meas, detail_true, detail_meas)
+end
+
+# Calculate All Estimates
+# Estimate the obs to converge and the estimation error using the Deltamax,
+# Order, Variance, Uninformed methods for true, noisy departure times, and
+# noisy departure order
+# Input: NA
+# Output: obs to converge and estimation error for each method and noise level
+function infer(param_inf::Paraminf)
+    settings = param_inf.settings
+    n_runs = param_inf.n_runs
+    n_methods = param_inf.n_methods
+    max_servers = param_inf.max_servers
+    obs_max = param_inf.obs_max
+    time_limit = param_inf.time_limit
+    ϵ = param_inf.ϵ
+    window = param_inf.window
+    step = param_inf.step
+    raw_true = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
+    raw_meas = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
+    conv_true = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
+    conv_meas = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
+    error_true = zeros(n_runs, n_methods) # c estimate with true departure times
+    error_meas = zeros(n_runs, n_methods) # c estimate with noisy departure times
+
+    # caculate each metric for each DOE run
+    for i = 1:n_runs
+        # initialize constants and data structures
+        print("Run $i: ") # status update
+        aname = settings[i, 2] # arrival distribution
+        sname = settings[i, 3] # service distribution
+        obs_limit = settings[i, 4] # number of observations
+        c_true = settings[i, 5] # actual number of servers
+        rho = settings[i, 6] # traffic intensity
+        (adist, sdist) = builddist(c_true, aname, sname, rho)
+        q = Queue(c_true, adist, sdist)
+        s = Sim(obs_max, time_limit, rand(1:1000))
+        q_out = runsim(s,q)
+        queue_output = disorder(q_out, c_true) # queue sim results with noise
+        array_size = floor(Int64, (obs_max - 20) / step)
+        ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
+        ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
+        ests_err = zeros(Int64, array_size, n_methods) # c estimates by obs by run
+
+        print("conv, ")
+        (conv_true_single, conv_meas_single, ests_single, ests_meas_single) = convergence(param_inf, output, c)
+        println("est")
+        (error_true_single, error_meas_single, detail_single, detail_meas_single) = esterror(param_inf, output, obs_limit, c)
+        conv_true[i,:] = conv_true_single
+        conv_meas[i,:] = conv_meas_single
+        error_true[i,:] = error_true_single
+        error_meas[i,:] = error_meas_single
+        for j = 1:n_methods
+            raw_true[i,j] = ests_single[:,j]
+            raw_meas[i,j] = ests_meas_single[:,j]
+        end
+  end
+
+  resp_error = (error_true, error_meas)
+  resp_conv = (conv_true, conv_meas)
+  resp_raw = (raw_true, raw_meas)
+  (resp_error, resp_conv, resp_raw)
+end
