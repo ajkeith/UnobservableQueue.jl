@@ -174,9 +174,9 @@ using Plots; gr()
         step = 20 # how many observations to skip while calculating convergence
         param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
         (rerr, rconv, rraw) = infer(param_inf)
-        @test mean(rerr[1][:,1]) <= 0.1 && mean(rerr[1][:,2]) >= 0.5
-        @test mean(rerr[2][:,1]) <= 0.1 && mean(rerr[1][:,2]) >= 0.5
-        @test mean(rconv[1][:,1]) <= 40 && (mean(rconv[1][:,2]) == 0 || mean(rconv[1][:,2]) >= 200)
-        @test mean(rconv[2][:,1]) <= 40 && (mean(rconv[1][:,2]) == 0 || mean(rconv[1][:,2]) >= 200)
+        @test mean(rerr[1][:,1]) < mean(rerr[1][:,2])
+        @test mean(rerr[2][:,1]) < mean(rerr[1][:,2])
+        @test (rconv[1][1,1] < rconv[1][1,2]) || (rconv[1][1,2] == 0)
+        @test (rconv[2][1,1] < rconv[1][1,2]) || (rconv[2][1,2] == 0)
     end
 end

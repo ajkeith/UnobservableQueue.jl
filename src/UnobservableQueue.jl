@@ -404,16 +404,16 @@ function infer(param_inf::Paraminf)
         q = Queue(c_true, adist, sdist)
         s = Sim(obs_max, time_limit, rand(1:1000))
         q_out = runsim(s,q)
-        queue_output = disorder(q_out, c_true) # queue sim results with noise
+        output = disorder(q_out, c_true) # queue sim results with noise
         array_size = floor(Int64, (obs_max - 20) / step)
         ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
         ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
         ests_err = zeros(Int64, array_size, n_methods) # c estimates by obs by run
 
         print("conv, ")
-        (conv_true_single, conv_meas_single, ests_single, ests_meas_single) = convergence(param_inf, output, c)
-        println("est")
-        (error_true_single, error_meas_single, detail_single, detail_meas_single) = esterror(param_inf, output, obs_limit, c)
+        (conv_true_single, conv_meas_single, ests_single, ests_meas_single) = convergence(param_inf, output, c_true)
+        println("err")
+        (error_true_single, error_meas_single, detail_single, detail_meas_single) = esterror(param_inf, output, obs_limit, c_true)
         conv_true[i,:] = conv_true_single
         conv_meas[i,:] = conv_meas_single
         error_true[i,:] = error_true_single
