@@ -2,40 +2,31 @@ using SimJulia, ResumableFunctions
 using Distributions, DataFrames, StatsBase
 # using BenchmarkTools
 
-mutable struct queue
+mutable struct Queue
     c::Int64 # number of servers
     adist::Distribution # arrival distribution
     sdist::Distribution # service distribution (single server)
 end
-queue() = queue(2, 1/2, 0.9, Exponential(1/λ), Exponential(1/μ))
+Queue() = Queue(2, Exponential(1/λ), Exponential(1/μ))
 
-mutable struct sim
+mutable struct Sim
     ncust::Int64 # total number of customers generated
     timelimit::Int64 # time limit for simulation
     seed::Int64 # rng seed
 end
-sim() = sim(1_000, 10_000, 8710)
+Sim() = Sim(1_000, 10_000, 8710)
 
-# convert infparams and runparams to actuable structs
-mutable struct infparams
-    settings = readcsv(fn1, header = true)[1] # DOE runs
-    # n_runs = length(settings[:,1])
-    n_runs = 10 # limit runs for debugging and timing
-    n_methods = 6 # number of methods to compare
-    MAX_SERVERS = 19 # max number of servers
-    obs_max = 1000 # max observations available
-    ϵ = 0.05 # convergence quality
-    window = 10 # observation window for convergence and estimates
-    step = 20 # how many observations to skip while calculating convergence
-end
-
-mutable struct runparams
-    obs_limit = settings[i, 4] # number of observations
-    c_true = settings[i, 5] # actual number of servers
-    fn2 = "QueueOutv18\\out" * "$i" * ".csv"
-    q_out = readcsv(fn2, header = true)[1] # raw queue simulation results
-    output = disorder(q_out, settings[i,:]) # queue sim results with noise
-    lim = 20 # need at least 20 obs (since MAX_SERVERS = 19)
+# convert Paraminf and Paramrun to actual structs
+mutable struct Paraminf
+    settings::Array{Any,2} # DOE runs
+    n_runs::Int64 # number of runs
+    n_methods::Int64 # number of methods to compare
+    max_servers::Int64 # max number of servers
+    obs_max::Int64 # max observations available
+    time_limit::Int64 # max number of sim reps
+    ϵ::Float64 # convergence quality
+    window::Int64 # observation window for convergence and estimates
+    step::Int64 # how many observations to skip while calculating convergence
 end
 
 # define customer behavior
@@ -51,7 +42,7 @@ end
     departtime[id] = now(env)
 end
 
-function runsim(s::sim, q::queue)
+function runsim(s::Sim, q::Queue)
     ncust = s.ncust
     seed = s.seed
     c = q.c
@@ -76,33 +67,32 @@ function runsim(s::sim, q::queue)
     depart = hcat(sortrows(hcat(departtime, arriveorder)), collect(1:ncust))
     departorder = convert(Vector{Int64}, sortrows(depart, by = x -> (x[2],x[1],x[3]))[:,3])
     DataFrame(aorder = arriveorder, atime = arrivetime, stime = starttime, dorder = departorder, dtime = departtime)
+    # hcat(arrivetime, starttime, departorder, departtime, departtime - starttime, starttime - arrivetime, arriveorder)
 end
 
 # Disorder Function
 # Create noisy data for robust methods
 # Input: queue sim output
 # Output: true and noisy arrival and departure data
-function disorder(r_out::Array{Float64,2}, num_servers::Int64)
+function disorder(simout::DataFrame, num_servers::Int64)
   # actual data from simulation output
-  A = r_out[:, 1] # arrive_order
-  D_num = r_out[:, 3] # depart_order
-  D_sort = r_out[:, 4] # depart_time
+  A = simout[:atime] # arrive time
+  D_num = simout[:dorder] # depart_order
+  D_sort = simout[:dtime] # depart_time
   D_raw = sort(D_sort) # sorted depart_time
-  # D_raw_num = sortrows(r_out[:,3:4], by = x -> x[1])
 
   # constants and data structures
-  NUM_SERVERS = num_servers
-  MAX_CUSTS = length(r_out[:, 1])
+  max_custs = length(A)
   results = DataFrame()
 
   # Introduce partial observation error on cust depart order and time
-  D_num_err = zeros(MAX_CUSTS)
-  D_num_err[1:MAX_CUSTS] = D_num[1:MAX_CUSTS] # order error
-  D_err = zeros(MAX_CUSTS) # misordered depart times
-  D_err[1:MAX_CUSTS] = D_sort[1:MAX_CUSTS] # misordered depart times
-  for i = 1:(MAX_CUSTS-NUM_SERVERS - 1)
+  D_num_err = zeros(max_custs)
+  D_num_err[1:max_custs] = D_num[1:max_custs] # order error
+  D_err = zeros(max_custs) # misordered depart times
+  D_err[1:max_custs] = D_sort[1:max_custs] # misordered depart times
+  for i = 1:(max_custs - num_servers - 1)
     if rand() < 0.1
-      swap = i + rand(1:NUM_SERVERS)
+      swap = i + rand(1:num_servers)
       temp1 = D_num_err[i]
       temp2 = D_err[i]
       D_num_err[i] = D_num_err[swap]
@@ -122,15 +112,15 @@ function disorder(r_out::Array{Float64,2}, num_servers::Int64)
   end
   D_meas = zeros(len)
   incr = 0
-  for ind in convert.(Int64, r_out[:,3])
+  for ind in simout[:dorder]
       incr += 1
       D_meas[incr] = D_raw_meas[ind]
   end
 
-  DataFrame(x = 1:MAX_CUSTS, Arrive = A[1:MAX_CUSTS],
-    Depart = D_sort[1:MAX_CUSTS], DepartMeas = D_meas[1:MAX_CUSTS],
-    DepartErr = D_err[1:MAX_CUSTS], DepartOrder = D_num[1:MAX_CUSTS],
-    DepartOrderErr = D_num_err[1:MAX_CUSTS])
+  DataFrame(ArriveOrder = 1:max_custs, Arrive = A[1:max_custs],
+    Depart = D_sort[1:max_custs], DepartMeas = D_meas[1:max_custs],
+    DepartErr = D_err[1:max_custs], DepartOrder = D_num[1:max_custs],
+    DepartOrderErr = D_num_err[1:max_custs])
 end
 
 
@@ -188,7 +178,7 @@ end
 
 # Summary Estimator - fast version
 # may be incorrect
-function c_var_unf(A::Vector{Float64}, D::Vector{Float64}, cmax::Int64)
+function c_var_unf_fast(A::Vector{Float64}, D::Vector{Float64}, cmax::Int64)
   # Initilaize data structures and functions
   N = size(D, 1)
   B̂ = zeros(N)
@@ -230,7 +220,7 @@ end
 # Note: D(k,m) the kth order statistic of the departure times of the first m
 # customers is the same as the kth order statistic of the departure times in
 # increasing time order
-function c_var_unf_slow(A::Vector{Float64}, D::Vector{Float64}, cmax::Int64)
+function c_var_unf(A::Vector{Float64}, D::Vector{Float64}, cmax::Int64)
   # Initilaize data structures and functions
   N = size(D, 1)
   B̂ = zeros(N)
@@ -264,190 +254,166 @@ function c_var_unf_slow(A::Vector{Float64}, D::Vector{Float64}, cmax::Int64)
   (r1, r2, VS)
 end
 
-# separate estimation error and convergence functions? (yes)
-
-function convergence()
-    ind = 0
-    lim = 20 # need at least 20 obs (since MAX_SERVERS = 19)
-    bool_true = falses(n_methods)
-    bool_meas = falses(n_methods)
-    bool_err = falses(n_methods)
-    while lim <= (obs_max - step)
-      # println(lim)
-      lim = lim + step
-      ind += 1
-      # true departure
-      rd = c_est_order(Array(output[:DepartOrder])[1:lim])
-      (rv, re, rn, rc) = c_est(Array(output[:Arrive])[1:lim], Array(output[:Depart])[1:lim], MAX_SERVERS)
-      # rr = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:Depart])[1:lim], MAX_SERVERS)
-      rr = 0
-      # time error
-      rd_meas = copy(rd)
-      (rv_meas, re_meas, rn_meas, rc_meas) = c_est(Array(output[:Arrive])[1:lim], Array(output[:DepartMeas])[1:lim], MAX_SERVERS)
-      # rr_meas = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:DepartMeas])[1:lim], MAX_SERVERS)
-      rr_meas = 0
-      # order error
-      rd_err = c_est_order(Array(output[:DepartOrderErr])[1:lim])
-      (rv_err, re_err, rn_err, rc_err) = c_est(Array(output[:Arrive])[1:lim], Array(output[:DepartErr])[1:lim], MAX_SERVERS)
-      # rr_err = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:DepartErr])[1:lim], MAX_SERVERS)
-      rr_err = 0
-      # record results
-      ests_true[ind, :] = [rd rv re rn rc rr]
-      ests_meas[ind, :] = [rd_meas rv_meas re_meas rn_meas rc_meas rr_meas]
-      ests_err[ind, :] = [rd_err rv_err re_err rn_err rc_err rr_err]
-      if ind >= window
-        for j = 1:n_methods
-          if !bool_true[j] && mean(abs.(ests_true[(ind - window + 1):(ind), j] - c_true)) < ϵ
-            conv_true[i, j] = (ind - window + 1) * step
-            bool_true[j] = true
-          end
-          if !bool_meas[j] && mean(abs.(ests_meas[(ind - window + 1):(ind), j]- c_true)) < ϵ
-            conv_meas[i, j] = (ind - window + 1) * step
-            bool_meas[j] = true
-          end
-          if !bool_err[j] && mean(abs.(ests_err[(ind - window + 1):(ind), j]- c_true)) < ϵ
-            conv_err[i, j] = (ind - window + 1) * step
-            bool_err[j] = true
-          end
-        end
-      end
+# separated distribution function
+function builddist(c_true::Int64, aname::String, sname::String, rho::Float64)
+    lam = 20
+    norm_var = 3
+    a = 1
+    a_lam = 1
+    a_mu = 1
+    mu = lam / (c_true * rho)
+    if aname == "Uniform"
+        adist = Uniform(0, 2 * 1 / lam)
+    elseif aname == "Exponential"
+        adist = Exponential(1 / lam)
+    elseif aname == "LogNormal"
+        adist = LogNormal(log(1 / lam) - norm_var / 2, sqrt(norm_var))
+    elseif aname == "Beta"
+        adist = Beta(a_lam, (a_lam / (1 / lam)) - a_lam)
+    else
+        error("Arrival distribution must be Uniform, Exponential, LogNormal, or Beta")
     end
+    if sname == "Uniform"
+        sdist = Uniform(0, 2 * 1 / mu)
+    elseif sname == "Exponential"
+        sdist = Exponential(1 / mu)
+    elseif sname == "LogNormal"
+        sdist = LogNormal(log(1 / mu) - norm_var / 2, sqrt(norm_var))
+    elseif sname == "Beta"
+        sdist = Beta(a_mu, (a_mu / (1 / mu)) - a_mu)
+    else
+        error("Service distribution must be Uniform, Exponential, LogNormal, or Beta")
+    end
+    adist, sdist
 end
 
-# Calculate All Estimates
-# Estimate the obs to converge and the estimation error using the Deltamax,
-# Order, Variance, Uninformed methods for true, noisy departure times, and
-# noisy departure order
-# Input: NA
-# Output: obs to converge and estimation error for each method and noise level
-function infer()
-  # Initialize constants and data structures
-  fn1 = "QueueOutv18\\design_v18.csv"
-  settings = readcsv(fn1, header = true)[1] # DOE runs
-  # n_runs = length(settings[:,1])
-  n_runs = 10 # limit runs for debugging and timing
-  n_methods = 6 # number of methods to compare
-  MAX_SERVERS = 19 # max number of servers
-  obs_max = 1000 # max observations available
-  ϵ = 0.05 # convergence quality
-  window = 10 # observation window for convergence and estimates
-  step = 20 # how many observations to skip while calculating convergence
-  error_true = zeros(n_runs, n_methods) # c estimate with true departure times
-  error_meas = zeros(n_runs, n_methods) # c estimate with noisy departure times
-  error_err = zeros(n_runs, n_methods) # c estimate with noisy departure order
-  conv_true = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
-  conv_meas = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
-  conv_err = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
-  raw_true = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
-  raw_meas = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
-  raw_err = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
-
-  # caculate each metric for each DOE run
-  for i = 1:n_runs
-    # initialize constants and data structures
-    print("Run $i: ") # status update
-    obs_limit = settings[i, 4] # number of observations
-    c_true = settings[i, 5] # actual number of servers
-    fn2 = "QueueOutv18\\out" * "$i" * ".csv"
-    q_out = readcsv(fn2, header = true)[1] # raw queue simulation results
-    output = disorder(q_out, settings[i,:]) # queue sim results with noise
-    # obs_max = size(output[:,1], 1) # deprecated
+# separated convergence function
+function convergence(param_inf::Paraminf, queue_output::DataFrame, c_true::Int64)
+    ind = 0
+    lim = param_inf.max_servers + 1
+    n_methods = param_inf.n_methods
+    obs_max = param_inf.obs_max
+    step = param_inf.step
+    ϵ = param_inf.ϵ
+    output = queue_output
+    bool_true = falses(n_methods)
+    bool_meas = falses(n_methods)
+    conv_true = zeros(n_methods)
+    conv_meas = zeros(n_methods)
     array_size = floor(Int64, (obs_max - 20) / step)
     ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
     ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
-    ests_err = zeros(Int64, array_size, n_methods) # c estimates by obs by run
-
-    # calculate number of observations until convergence
-    print("conv, ")
-    ind = 0
-    lim = 20 # need at least 20 obs (since MAX_SERVERS = 19)
-    bool_true = falses(n_methods)
-    bool_meas = falses(n_methods)
-    bool_err = falses(n_methods)
     while lim <= (obs_max - step)
       # println(lim)
       lim = lim + step
       ind += 1
       # true departure
-      rd = c_est_order(Array(output[:DepartOrder])[1:lim])
-      (rv, re, rn, rc) = c_est(Array(output[:Arrive])[1:lim], Array(output[:Depart])[1:lim], MAX_SERVERS)
-      # rr = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:Depart])[1:lim], MAX_SERVERS)
-      rr = 0
+      out_order = sort(output[1:lim,:], :DepartOrder)[:ArriveOrder]
+      ro = c_order(out_order)
+      (rv, ru, VS) = c_var_unf(output[:Arrive][1:lim], output[:Depart][1:lim], max_servers)
       # time error
-      rd_meas = copy(rd)
-      (rv_meas, re_meas, rn_meas, rc_meas) = c_est(Array(output[:Arrive])[1:lim], Array(output[:DepartMeas])[1:lim], MAX_SERVERS)
-      # rr_meas = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:DepartMeas])[1:lim], MAX_SERVERS)
-      rr_meas = 0
-      # order error
-      rd_err = c_est_order(Array(output[:DepartOrderErr])[1:lim])
-      (rv_err, re_err, rn_err, rc_err) = c_est(Array(output[:Arrive])[1:lim], Array(output[:DepartErr])[1:lim], MAX_SERVERS)
-      # rr_err = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:DepartErr])[1:lim], MAX_SERVERS)
-      rr_err = 0
+      out_order_meas = sort(output[1:lim,:], :DepartMeas)[:ArriveOrder]
+      ro_meas = c_order(out_order_meas)
+      (rv_meas, ru_meas, VS_meas) = c_var_unf(output[:Arrive][1:lim], output[:DepartMeas][1:lim], max_servers)
       # record results
-      ests_true[ind, :] = [rd rv re rn rc rr]
-      ests_meas[ind, :] = [rd_meas rv_meas re_meas rn_meas rc_meas rr_meas]
-      ests_err[ind, :] = [rd_err rv_err re_err rn_err rc_err rr_err]
+      ests_true[ind, :] = [ro rv ru]
+      ests_meas[ind, :] = [ro_meas rv_meas ru_meas]
       if ind >= window
         for j = 1:n_methods
           if !bool_true[j] && mean(abs.(ests_true[(ind - window + 1):(ind), j] - c_true)) < ϵ
-            conv_true[i, j] = (ind - window + 1) * step
+            conv_true[j] = (ind - window + 1) * step
             bool_true[j] = true
           end
           if !bool_meas[j] && mean(abs.(ests_meas[(ind - window + 1):(ind), j]- c_true)) < ϵ
-            conv_meas[i, j] = (ind - window + 1) * step
+            conv_meas[j] = (ind - window + 1) * step
             bool_meas[j] = true
-          end
-          if !bool_err[j] && mean(abs.(ests_err[(ind - window + 1):(ind), j]- c_true)) < ϵ
-            conv_err[i, j] = (ind - window + 1) * step
-            bool_err[j] = true
           end
         end
       end
     end
-
-    # calculate estimation error
-    println("est")
-    window_detail = 50
-    ind_l = Int64(obs_limit)
-    ind_u = Int64(obs_limit  + window_detail - 1)
-    detail_true = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
-    detail_meas = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
-    detail_err = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
-    ind = 0
-    for lim = ind_l:ind_u
-      ind += 1
-      # true departure
-      rd = c_est_order(Array(output[:DepartOrder])[1:lim])
-      (rv, re, rn, rc) = c_est(Array(output[:Arrive])[1:lim], Array(output[:Depart])[1:lim], MAX_SERVERS)
-      # rr = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:Depart])[1:lim], MAX_SERVERS)
-      rr = 0
-      # time error
-      rd_meas = copy(rd)
-      (rv_meas, re_meas, rn_meas, rc_meas) = c_est(Array(output[:Arrive])[1:lim], Array(output[:DepartMeas])[1:lim], MAX_SERVERS)
-      # rr_meas = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:DepartMeas])[1:lim], MAX_SERVERS)
-      rr_meas = 0
-      # order error
-      rd_err = c_est_order(Array(output[:DepartOrderErr])[1:lim])
-      (rv_err, re_err, rn_err, rc_err) = c_est(Array(output[:Arrive])[1:lim], Array(output[:DepartErr])[1:lim], MAX_SERVERS)
-      # rr_err = c_est_robust(Array(output[:Arrive])[1:lim], Array(output[:DepartErr])[1:lim], MAX_SERVERS)
-      rr_err = 0
-      # record results
-      detail_true[ind, :] = [rd rv re rn rc rr]
-      detail_meas[ind, :] = [rd_meas rv_meas re_meas rn_meas rc_meas rr_meas]
-      detail_err[ind, :] = [rd_err rv_err re_err rn_err rc_err rr_err]
-    end
-    for j = 1:n_methods
-      error_true[i, j] = mean(abs.(detail_true[:, j] - c_true))
-      error_meas[i, j] = mean(abs.(detail_meas[:, j] - c_true))
-      error_err[i, j] = mean(abs.(detail_err[:, j] - c_true))
-      raw_true[i, j] = ests_true[:, j]
-      raw_meas[i, j] = ests_meas[:, j]
-      raw_err[i, j] = ests_err[:, j]
-    end
-  end
-
-  resp_error = (error_true, error_meas, error_err)
-  resp_conv = (conv_true, conv_meas, conv_err)
-  resp_raw = (raw_true, raw_meas, raw_err)
-  (resp_error, resp_conv, resp_raw)
+    (conv_true, conv_meas, ests_true, ests_meas)
 end
+
+# # Calculate All Estimates
+# # Estimate the obs to converge and the estimation error using the Deltamax,
+# # Order, Variance, Uninformed methods for true, noisy departure times, and
+# # noisy departure order
+# # Input: NA
+# # Output: obs to converge and estimation error for each method and noise level
+# function infer(param_inf::Paraminf)
+#     settings = param_inf.settings
+#     n_runs = param_inf.n_runs
+#     n_methods = param_inf.m_methods
+#     max_servers = param_inf.max_servers
+#     obs_max = param_inf.obs_max
+#     time_limit = param_inf.time_limit
+#     ϵ = param_inf.ϵ
+#     window = param_inf.window
+#     step = param_inf.step
+#     raw_true = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
+#     raw_meas = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
+#     conv_true = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
+#     conv_meas = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv
+#     error_true = zeros(n_runs, n_methods) # c estimate with true departure times
+#     error_meas = zeros(n_runs, n_methods) # c estimate with noisy departure times
+#
+#     # caculate each metric for each DOE run
+#     for i = 1:n_runs
+#         # initialize constants and data structures
+#         print("Run $i: ") # status update
+#         aname = settings[i, 2] # arrival distribution
+#         sname = settings[i, 3] # service distribution
+#         obs_limit = settings[i, 4] # number of observations
+#         c_true = settings[i, 5] # actual number of servers
+#         rho = settings[i, 6] # traffic intensity
+#         (adist, sdist) = builddist(c_true, aname, sname, rho)
+#         q = Queue(c_true, adist, sdist)
+#         s = Sim(obs_max, time_limit, rand(1:1000))
+#         q_out = runsim(s,q)
+#         queue_output = disorder(q_out, c_true) # queue sim results with noise
+#         array_size = floor(Int64, (obs_max - 20) / step)
+#         ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
+#         ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
+#         ests_err = zeros(Int64, array_size, n_methods) # c estimates by obs by run
+#
+#         # calculate number of observations until convergence
+#         print("conv, ")
+#         (conv_true_single, conv_meas_single) = convergence(param_inf, param_run, queue_output)
+#         conv_true[i,:] = conv_true_single
+#         conv_meas[i,:] = conv_meas_single
+#     end
+#
+#     # calculate estimation error
+#     println("est")
+#     window_detail = 50
+#     ind_l = Int64(obs_limit)
+#     ind_u = Int64(obs_limit  + window_detail - 1)
+#     detail_true = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
+#     detail_meas = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
+#     detail_err = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
+#     ind = 0
+#     for lim = ind_l:ind_u
+#       ind += 1
+#       # true departure
+#       ro = c_order(Array(output[:DepartOrder])[1:lim])
+#       (rv, ru, VS) = c_var_unf(Array(output[:Arrive])[1:lim], Array(output[:Depart])[1:lim], max_servers)
+#       # time error
+#       rd_meas = copy(rd)
+#       (rv_meas, re_meas, rn_meas, rc_meas) = c_est(Array(output[:Arrive])[1:lim], Array(output[:DepartMeas])[1:lim], max_servers)
+#       # record results
+#       detail_true[ind, :] = [ro rv ru]
+#       detail_meas[ind, :] = [ro_meas rv_meas ru_meas]
+#     end
+#     for j = 1:n_methods
+#       error_true[i, j] = mean(abs.(detail_true[:, j] - c_true))
+#       error_meas[i, j] = mean(abs.(detail_meas[:, j] - c_true))
+#       raw_true[i, j] = ests_true[:, j]
+#       raw_meas[i, j] = ests_meas[:, j]
+#     end
+#   end
+#
+#   resp_error = (error_true, error_meas, error_err)
+#   resp_conv = (conv_true, conv_meas, conv_err)
+#   resp_raw = (raw_true, raw_meas, raw_err)
+#   (resp_error, resp_conv, resp_raw)
+# end

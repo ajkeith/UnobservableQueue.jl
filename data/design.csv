@@ -1,0 +1,721 @@
+Estimation Method,Arrival Distribution,Service Distribution,Observations,Servers,Traffic Intensity
+Robust Uninformed,Exponential,Beta,400,9,0.7
+Entropy,Uniform,LogNormal,400,9,0.95
+Uninformed,Exponential,Beta,400,15,0.7
+Variance,Exponential,Beta,210,9,0.95
+Uninformed,Uniform,LogNormal,20,9,0.95
+Variance,Uniform,Beta,20,15,0.7
+Variance,Exponential,LogNormal,400,9,0.95
+Robust Uninformed,Uniform,Beta,400,15,0.95
+Variance,Uniform,Beta,210,15,0.95
+Uninformed,Exponential,LogNormal,20,15,0.7
+Deltamax,Uniform,Uniform,20,15,0.7
+Deltamax,Uniform,Uniform,400,15,0.95
+Deltamax,Uniform,LogNormal,20,2,0.95
+Variance,Uniform,LogNormal,210,2,0.95
+Variance,Uniform,Exponential,210,9,0.95
+Robust Uninformed,Uniform,Beta,210,15,0.95
+Robust Uninformed,Uniform,LogNormal,210,9,0.7
+Variance,Uniform,Uniform,20,2,0.95
+Uninformed,Exponential,Exponential,210,9,0.95
+Deltamax,Exponential,Exponential,210,15,0.7
+Variance,Exponential,Beta,210,15,0.95
+Robust Uninformed,Uniform,Uniform,400,9,0.7
+Uninformed,Exponential,LogNormal,210,9,0.95
+Robust Uninformed,Uniform,LogNormal,400,9,0.95
+Uninformed,Uniform,Exponential,20,9,0.7
+Entropy,Uniform,Uniform,210,2,0.95
+Robust Uninformed,Exponential,Beta,400,2,0.7
+Entropy,Exponential,LogNormal,210,9,0.95
+Variance,Exponential,Exponential,400,15,0.95
+Uninformed,Uniform,LogNormal,400,2,0.95
+Uninformed,Uniform,Exponential,20,2,0.7
+Entropy,Uniform,LogNormal,20,9,0.95
+Uninformed,Exponential,Beta,210,9,0.95
+Entropy,Uniform,LogNormal,20,2,0.95
+Uninformed,Exponential,Uniform,400,15,0.7
+Entropy,Uniform,Uniform,20,15,0.95
+Uninformed,Uniform,LogNormal,400,15,0.95
+Robust Uninformed,Uniform,LogNormal,210,2,0.7
+Variance,Uniform,Uniform,210,9,0.7
+Entropy,Uniform,Beta,20,9,0.95
+Entropy,Exponential,Exponential,20,2,0.95
+Variance,Exponential,Exponential,20,9,0.7
+Uninformed,Exponential,Exponential,20,15,0.7
+Entropy,Exponential,Uniform,20,9,0.95
+Entropy,Uniform,Exponential,400,2,0.95
+Entropy,Uniform,Uniform,20,15,0.7
+Variance,Exponential,LogNormal,20,2,0.7
+Entropy,Exponential,Beta,20,2,0.95
+Deltamax,Exponential,LogNormal,20,15,0.7
+Deltamax,Exponential,Uniform,210,9,0.7
+Entropy,Uniform,LogNormal,210,2,0.95
+Robust Uninformed,Exponential,Uniform,400,15,0.95
+Uninformed,Exponential,Exponential,20,2,0.95
+Entropy,Uniform,Exponential,20,9,0.7
+Entropy,Uniform,Exponential,210,9,0.7
+Entropy,Uniform,Uniform,210,9,0.95
+Variance,Uniform,Beta,400,2,0.7
+Variance,Uniform,LogNormal,20,2,0.7
+Robust Uninformed,Uniform,Exponential,20,2,0.7
+Uninformed,Exponential,Exponential,400,9,0.95
+Uninformed,Exponential,Beta,210,2,0.7
+Variance,Uniform,Uniform,210,15,0.7
+Robust Uninformed,Exponential,LogNormal,20,15,0.95
+Uninformed,Exponential,LogNormal,20,2,0.7
+Deltamax,Exponential,Exponential,20,9,0.95
+Deltamax,Uniform,Exponential,400,9,0.7
+Entropy,Exponential,Uniform,400,9,0.95
+Entropy,Uniform,LogNormal,400,15,0.7
+Uninformed,Uniform,Uniform,210,9,0.95
+Robust Uninformed,Uniform,Beta,20,15,0.95
+Robust Uninformed,Exponential,Beta,210,2,0.95
+Uninformed,Exponential,Uniform,210,9,0.95
+Variance,Uniform,Exponential,400,9,0.7
+Uninformed,Exponential,Uniform,400,2,0.95
+Entropy,Uniform,LogNormal,400,15,0.95
+Uninformed,Uniform,Uniform,400,15,0.95
+Robust Uninformed,Exponential,Exponential,20,9,0.95
+Entropy,Uniform,LogNormal,210,9,0.95
+Variance,Exponential,Beta,20,2,0.95
+Entropy,Exponential,Uniform,400,2,0.7
+Entropy,Uniform,Exponential,20,15,0.7
+Uninformed,Uniform,Exponential,210,2,0.95
+Deltamax,Uniform,Beta,20,15,0.95
+Robust Uninformed,Exponential,LogNormal,210,9,0.95
+Variance,Exponential,Uniform,210,9,0.7
+Deltamax,Exponential,Beta,400,2,0.7
+Uninformed,Exponential,Uniform,20,2,0.95
+Entropy,Uniform,LogNormal,20,2,0.7
+Robust Uninformed,Uniform,LogNormal,400,15,0.95
+Uninformed,Exponential,Beta,210,15,0.7
+Deltamax,Exponential,Beta,400,2,0.95
+Variance,Exponential,LogNormal,20,15,0.7
+Variance,Exponential,Exponential,20,2,0.7
+Deltamax,Exponential,Uniform,20,9,0.7
+Variance,Exponential,Exponential,400,2,0.7
+Variance,Uniform,LogNormal,210,15,0.7
+Variance,Exponential,Exponential,210,2,0.7
+Uninformed,Exponential,Uniform,400,2,0.7
+Deltamax,Uniform,Exponential,20,9,0.95
+Uninformed,Uniform,Uniform,400,9,0.95
+Variance,Exponential,LogNormal,210,15,0.7
+Robust Uninformed,Exponential,Exponential,20,2,0.7
+Variance,Uniform,LogNormal,400,2,0.95
+Uninformed,Exponential,Beta,20,2,0.7
+Entropy,Exponential,Exponential,210,15,0.95
+Entropy,Uniform,LogNormal,20,9,0.7
+Uninformed,Uniform,Exponential,400,2,0.7
+Deltamax,Exponential,LogNormal,400,9,0.95
+Entropy,Uniform,LogNormal,20,15,0.7
+Deltamax,Exponential,Beta,400,9,0.7
+Variance,Exponential,LogNormal,210,9,0.95
+Deltamax,Uniform,LogNormal,20,9,0.95
+Uninformed,Uniform,LogNormal,400,9,0.7
+Variance,Uniform,Uniform,400,15,0.7
+Robust Uninformed,Uniform,Exponential,400,9,0.95
+Robust Uninformed,Exponential,Beta,400,15,0.95
+Uninformed,Exponential,Uniform,210,2,0.95
+Variance,Uniform,Exponential,400,2,0.7
+Deltamax,Exponential,Uniform,210,15,0.7
+Robust Uninformed,Uniform,Beta,400,9,0.7
+Deltamax,Exponential,Uniform,210,2,0.95
+Uninformed,Exponential,LogNormal,20,2,0.95
+Uninformed,Exponential,Uniform,400,9,0.95
+Robust Uninformed,Uniform,Uniform,400,9,0.95
+Variance,Uniform,Exponential,20,15,0.7
+Robust Uninformed,Uniform,LogNormal,400,15,0.7
+Deltamax,Uniform,LogNormal,210,9,0.95
+Variance,Exponential,Beta,210,15,0.7
+Variance,Uniform,Uniform,210,9,0.95
+Uninformed,Uniform,Exponential,210,9,0.7
+Uninformed,Uniform,LogNormal,400,15,0.7
+Robust Uninformed,Exponential,Beta,210,2,0.7
+Uninformed,Uniform,LogNormal,400,9,0.95
+Uninformed,Exponential,Beta,400,2,0.7
+Variance,Uniform,Uniform,20,2,0.7
+Uninformed,Uniform,Exponential,400,9,0.7
+Robust Uninformed,Exponential,Exponential,210,15,0.7
+Deltamax,Exponential,Exponential,400,2,0.7
+Robust Uninformed,Uniform,LogNormal,20,15,0.95
+Robust Uninformed,Uniform,Beta,400,2,0.95
+Uninformed,Exponential,LogNormal,400,15,0.7
+Entropy,Exponential,LogNormal,400,15,0.7
+Uninformed,Uniform,Beta,400,2,0.95
+Robust Uninformed,Exponential,Beta,210,15,0.95
+Deltamax,Uniform,Exponential,400,2,0.7
+Deltamax,Uniform,Uniform,20,15,0.95
+Entropy,Exponential,Exponential,400,9,0.95
+Deltamax,Uniform,Uniform,400,15,0.7
+Robust Uninformed,Uniform,Exponential,20,9,0.7
+Deltamax,Uniform,Exponential,20,2,0.7
+Uninformed,Uniform,Beta,400,9,0.95
+Uninformed,Uniform,Beta,210,15,0.7
+Deltamax,Uniform,LogNormal,400,15,0.95
+Deltamax,Uniform,Uniform,210,15,0.7
+Uninformed,Exponential,Beta,400,9,0.95
+Entropy,Uniform,Beta,400,2,0.7
+Uninformed,Uniform,LogNormal,210,2,0.7
+Robust Uninformed,Exponential,Uniform,400,9,0.7
+Entropy,Exponential,Uniform,20,2,0.7
+Variance,Exponential,Beta,20,15,0.95
+Uninformed,Uniform,LogNormal,210,15,0.95
+Uninformed,Uniform,Beta,20,9,0.95
+Robust Uninformed,Uniform,LogNormal,400,9,0.7
+Robust Uninformed,Uniform,Uniform,400,15,0.95
+Entropy,Exponential,Exponential,400,15,0.7
+Deltamax,Uniform,LogNormal,20,9,0.7
+Variance,Uniform,LogNormal,400,9,0.7
+Entropy,Exponential,Beta,400,2,0.95
+Robust Uninformed,Uniform,Uniform,210,9,0.7
+Deltamax,Exponential,Exponential,20,15,0.95
+Variance,Exponential,LogNormal,20,9,0.7
+Entropy,Uniform,Uniform,20,9,0.95
+Variance,Uniform,LogNormal,20,9,0.95
+Variance,Exponential,LogNormal,210,9,0.7
+Robust Uninformed,Exponential,Uniform,210,15,0.7
+Entropy,Exponential,Exponential,400,2,0.7
+Robust Uninformed,Exponential,LogNormal,400,9,0.7
+Deltamax,Exponential,Beta,20,15,0.95
+Robust Uninformed,Uniform,Exponential,210,2,0.95
+Variance,Exponential,Uniform,400,2,0.95
+Uninformed,Exponential,Exponential,20,15,0.95
+Uninformed,Uniform,Uniform,210,2,0.95
+Deltamax,Uniform,LogNormal,210,15,0.7
+Deltamax,Exponential,Beta,400,9,0.95
+Variance,Uniform,LogNormal,20,15,0.7
+Robust Uninformed,Uniform,Beta,210,9,0.7
+Uninformed,Exponential,LogNormal,210,15,0.95
+Uninformed,Exponential,Beta,400,9,0.7
+Robust Uninformed,Exponential,Exponential,20,15,0.95
+Variance,Exponential,Exponential,20,2,0.95
+Variance,Exponential,Uniform,400,15,0.7
+Uninformed,Exponential,LogNormal,400,15,0.95
+Robust Uninformed,Uniform,LogNormal,20,2,0.95
+Deltamax,Uniform,Uniform,400,2,0.95
+Entropy,Uniform,LogNormal,20,15,0.95
+Robust Uninformed,Exponential,Exponential,210,2,0.7
+Deltamax,Exponential,LogNormal,400,9,0.7
+Variance,Uniform,Beta,210,9,0.7
+Deltamax,Uniform,Exponential,210,2,0.95
+Deltamax,Exponential,LogNormal,20,2,0.7
+Robust Uninformed,Exponential,Uniform,210,2,0.7
+Variance,Exponential,Uniform,400,2,0.7
+Variance,Exponential,Beta,20,9,0.95
+Deltamax,Uniform,Exponential,400,9,0.95
+Deltamax,Uniform,Exponential,210,15,0.7
+Uninformed,Exponential,Exponential,400,2,0.7
+Variance,Exponential,Beta,210,9,0.7
+Variance,Uniform,Exponential,210,9,0.7
+Entropy,Exponential,Exponential,210,15,0.7
+Robust Uninformed,Uniform,LogNormal,210,9,0.95
+Deltamax,Exponential,Beta,210,9,0.7
+Robust Uninformed,Exponential,Exponential,20,2,0.95
+Variance,Exponential,LogNormal,20,15,0.95
+Variance,Uniform,Exponential,400,15,0.95
+Deltamax,Exponential,LogNormal,210,2,0.7
+Variance,Exponential,LogNormal,400,2,0.95
+Robust Uninformed,Exponential,Exponential,20,9,0.7
+Entropy,Uniform,Uniform,20,2,0.7
+Robust Uninformed,Exponential,LogNormal,210,2,0.95
+Deltamax,Uniform,LogNormal,20,15,0.95
+Variance,Uniform,Beta,20,2,0.95
+Uninformed,Uniform,Uniform,400,2,0.95
+Robust Uninformed,Exponential,LogNormal,20,9,0.95
+Deltamax,Exponential,Beta,20,2,0.7
+Uninformed,Exponential,LogNormal,210,15,0.7
+Variance,Exponential,Exponential,400,2,0.95
+Uninformed,Uniform,Exponential,210,9,0.95
+Entropy,Uniform,Uniform,210,9,0.7
+Entropy,Exponential,Exponential,210,9,0.7
+Entropy,Uniform,Uniform,400,2,0.95
+Robust Uninformed,Exponential,Beta,20,15,0.7
+Deltamax,Uniform,Beta,400,2,0.7
+Entropy,Exponential,Uniform,400,15,0.95
+Uninformed,Exponential,Uniform,210,9,0.7
+Variance,Uniform,Uniform,210,2,0.95
+Variance,Uniform,LogNormal,20,9,0.7
+Deltamax,Uniform,LogNormal,20,15,0.7
+Entropy,Exponential,Uniform,400,2,0.95
+Deltamax,Uniform,LogNormal,400,9,0.7
+Variance,Uniform,Uniform,400,9,0.7
+Variance,Exponential,LogNormal,210,15,0.95
+Uninformed,Uniform,LogNormal,20,9,0.7
+Deltamax,Uniform,LogNormal,210,9,0.7
+Robust Uninformed,Uniform,LogNormal,20,2,0.7
+Robust Uninformed,Exponential,Beta,210,9,0.7
+Entropy,Exponential,Uniform,20,9,0.7
+Deltamax,Uniform,Uniform,400,9,0.7
+Uninformed,Uniform,Beta,210,9,0.95
+Variance,Uniform,Exponential,210,2,0.95
+Deltamax,Exponential,Exponential,20,2,0.7
+Uninformed,Uniform,Beta,210,15,0.95
+Variance,Exponential,Beta,400,2,0.95
+Variance,Exponential,Uniform,20,9,0.7
+Robust Uninformed,Exponential,Uniform,400,2,0.7
+Robust Uninformed,Uniform,Uniform,20,2,0.7
+Deltamax,Uniform,Beta,20,15,0.7
+Entropy,Exponential,Uniform,210,2,0.7
+Entropy,Uniform,Beta,20,15,0.7
+Deltamax,Uniform,Beta,210,2,0.95
+Deltamax,Uniform,Exponential,210,2,0.7
+Deltamax,Exponential,Uniform,400,9,0.7
+Robust Uninformed,Uniform,Exponential,20,2,0.95
+Deltamax,Exponential,Beta,20,15,0.7
+Entropy,Uniform,Uniform,400,9,0.95
+Uninformed,Exponential,Beta,20,2,0.95
+Deltamax,Uniform,Uniform,400,9,0.95
+Entropy,Uniform,Exponential,210,15,0.7
+Variance,Exponential,Beta,210,2,0.7
+Deltamax,Exponential,Exponential,210,9,0.95
+Deltamax,Uniform,Beta,210,9,0.95
+Deltamax,Exponential,Uniform,400,15,0.95
+Entropy,Exponential,Beta,400,15,0.95
+Robust Uninformed,Exponential,Exponential,210,15,0.95
+Variance,Exponential,Uniform,210,2,0.95
+Robust Uninformed,Uniform,Beta,20,9,0.7
+Uninformed,Uniform,Beta,400,9,0.7
+Entropy,Exponential,Exponential,20,9,0.95
+Deltamax,Exponential,Exponential,210,2,0.95
+Uninformed,Exponential,Uniform,20,2,0.7
+Variance,Uniform,Exponential,400,9,0.95
+Robust Uninformed,Exponential,Uniform,210,2,0.95
+Robust Uninformed,Exponential,Exponential,210,9,0.7
+Uninformed,Exponential,Beta,210,2,0.95
+Deltamax,Uniform,Uniform,400,2,0.7
+Deltamax,Exponential,LogNormal,400,2,0.95
+Robust Uninformed,Exponential,Uniform,20,15,0.95
+Uninformed,Exponential,LogNormal,20,15,0.95
+Deltamax,Uniform,Beta,20,9,0.95
+Entropy,Uniform,LogNormal,210,15,0.95
+Entropy,Uniform,Uniform,400,15,0.7
+Entropy,Exponential,LogNormal,400,9,0.95
+Variance,Uniform,LogNormal,400,9,0.95
+Variance,Exponential,Uniform,20,15,0.7
+Deltamax,Exponential,LogNormal,210,15,0.95
+Entropy,Exponential,Exponential,20,15,0.7
+Robust Uninformed,Exponential,Uniform,400,9,0.95
+Variance,Exponential,Uniform,210,15,0.7
+Robust Uninformed,Exponential,LogNormal,20,2,0.7
+Deltamax,Exponential,Exponential,400,15,0.95
+Deltamax,Exponential,Uniform,210,15,0.95
+Deltamax,Exponential,Exponential,20,2,0.95
+Entropy,Exponential,Beta,210,15,0.95
+Robust Uninformed,Exponential,Uniform,210,9,0.7
+Variance,Uniform,Uniform,20,9,0.7
+Robust Uninformed,Exponential,LogNormal,210,9,0.7
+Deltamax,Exponential,Beta,210,15,0.7
+Uninformed,Uniform,Uniform,20,9,0.95
+Robust Uninformed,Exponential,Beta,210,9,0.95
+Deltamax,Exponential,Beta,210,2,0.95
+Robust Uninformed,Uniform,Beta,210,15,0.7
+Uninformed,Uniform,Beta,20,9,0.7
+Robust Uninformed,Uniform,Beta,400,2,0.7
+Entropy,Uniform,Exponential,210,2,0.7
+Robust Uninformed,Uniform,Beta,400,15,0.7
+Entropy,Uniform,Beta,400,9,0.7
+Robust Uninformed,Uniform,Beta,210,2,0.7
+Uninformed,Exponential,Uniform,20,15,0.7
+Robust Uninformed,Exponential,Exponential,400,9,0.95
+Entropy,Exponential,LogNormal,20,9,0.95
+Uninformed,Exponential,Exponential,20,2,0.7
+Robust Uninformed,Uniform,Uniform,20,9,0.7
+Robust Uninformed,Uniform,LogNormal,210,15,0.7
+Uninformed,Exponential,LogNormal,400,2,0.95
+Entropy,Uniform,Uniform,400,9,0.7
+Variance,Exponential,Uniform,210,15,0.95
+Uninformed,Uniform,Uniform,210,15,0.95
+Variance,Uniform,Uniform,20,15,0.95
+Uninformed,Uniform,Uniform,400,15,0.7
+Variance,Exponential,Exponential,210,15,0.95
+Deltamax,Exponential,Exponential,400,9,0.95
+Deltamax,Uniform,Beta,210,2,0.7
+Entropy,Uniform,Beta,210,2,0.7
+Deltamax,Exponential,Beta,210,9,0.95
+Entropy,Uniform,Uniform,20,2,0.95
+Robust Uninformed,Exponential,LogNormal,20,9,0.7
+Variance,Exponential,Exponential,20,9,0.95
+Uninformed,Uniform,Beta,210,9,0.7
+Variance,Uniform,Beta,210,15,0.7
+Variance,Uniform,Beta,20,15,0.95
+Entropy,Uniform,Exponential,400,9,0.7
+Robust Uninformed,Exponential,Beta,20,9,0.7
+Variance,Uniform,Beta,210,2,0.7
+Deltamax,Uniform,Exponential,210,9,0.95
+Entropy,Uniform,Exponential,210,15,0.95
+Deltamax,Exponential,Beta,210,15,0.95
+Entropy,Exponential,Beta,400,2,0.7
+Entropy,Exponential,Exponential,210,2,0.7
+Variance,Exponential,LogNormal,400,9,0.7
+Entropy,Exponential,Exponential,20,15,0.95
+Deltamax,Exponential,Uniform,400,2,0.7
+Deltamax,Exponential,Uniform,210,2,0.7
+Robust Uninformed,Uniform,Uniform,20,15,0.95
+Variance,Exponential,Exponential,400,9,0.7
+Uninformed,Exponential,Uniform,20,15,0.95
+Entropy,Exponential,Uniform,210,2,0.95
+Deltamax,Exponential,LogNormal,400,15,0.7
+Deltamax,Exponential,Uniform,20,9,0.95
+Deltamax,Uniform,Beta,20,9,0.7
+Variance,Uniform,Exponential,400,15,0.7
+Entropy,Exponential,Exponential,400,2,0.95
+Variance,Uniform,LogNormal,210,9,0.95
+Entropy,Exponential,Uniform,20,15,0.95
+Uninformed,Exponential,Exponential,210,15,0.7
+Entropy,Uniform,Exponential,20,9,0.95
+Entropy,Uniform,Exponential,400,15,0.95
+Deltamax,Uniform,LogNormal,400,2,0.95
+Entropy,Uniform,Uniform,210,15,0.95
+Entropy,Uniform,Exponential,20,15,0.95
+Entropy,Uniform,Beta,20,15,0.95
+Deltamax,Exponential,LogNormal,210,9,0.7
+Robust Uninformed,Exponential,Beta,20,9,0.95
+Entropy,Uniform,LogNormal,400,2,0.95
+Uninformed,Exponential,Beta,20,15,0.7
+Entropy,Exponential,LogNormal,400,15,0.95
+Robust Uninformed,Uniform,Uniform,400,15,0.7
+Uninformed,Exponential,Beta,210,9,0.7
+Uninformed,Exponential,Uniform,210,15,0.95
+Uninformed,Exponential,Beta,400,15,0.95
+Uninformed,Exponential,LogNormal,210,2,0.7
+Variance,Exponential,Exponential,210,2,0.95
+Deltamax,Uniform,Uniform,210,2,0.7
+Robust Uninformed,Exponential,Uniform,20,2,0.7
+Uninformed,Exponential,LogNormal,210,2,0.95
+Deltamax,Uniform,Exponential,20,15,0.95
+Variance,Uniform,LogNormal,400,15,0.7
+Entropy,Exponential,Uniform,210,15,0.7
+Robust Uninformed,Uniform,Exponential,400,15,0.95
+Entropy,Exponential,Exponential,400,15,0.95
+Deltamax,Uniform,Beta,400,2,0.95
+Variance,Exponential,LogNormal,210,2,0.7
+Deltamax,Uniform,Beta,210,15,0.95
+Robust Uninformed,Uniform,Beta,400,9,0.95
+Entropy,Exponential,Uniform,400,15,0.7
+Robust Uninformed,Uniform,Exponential,210,15,0.7
+Entropy,Exponential,Uniform,20,15,0.7
+Uninformed,Uniform,Exponential,20,15,0.95
+Uninformed,Uniform,Beta,20,15,0.95
+Uninformed,Exponential,LogNormal,20,9,0.7
+Robust Uninformed,Uniform,LogNormal,210,15,0.95
+Deltamax,Uniform,Uniform,20,9,0.95
+Robust Uninformed,Uniform,Beta,210,9,0.95
+Uninformed,Uniform,LogNormal,20,2,0.95
+Deltamax,Exponential,Exponential,210,9,0.7
+Entropy,Uniform,Beta,210,15,0.95
+Uninformed,Uniform,Beta,20,15,0.7
+Entropy,Exponential,Exponential,210,2,0.95
+Variance,Uniform,LogNormal,210,2,0.7
+Uninformed,Exponential,Beta,20,9,0.7
+Variance,Exponential,Uniform,20,15,0.95
+Robust Uninformed,Exponential,Uniform,20,9,0.95
+Variance,Exponential,LogNormal,210,2,0.95
+Uninformed,Exponential,Beta,400,2,0.95
+Robust Uninformed,Exponential,Uniform,400,15,0.7
+Robust Uninformed,Exponential,Uniform,210,9,0.95
+Variance,Uniform,LogNormal,20,2,0.95
+Robust Uninformed,Exponential,Exponential,20,15,0.7
+Variance,Uniform,LogNormal,210,15,0.95
+Entropy,Exponential,LogNormal,20,2,0.95
+Robust Uninformed,Uniform,Uniform,210,15,0.7
+Uninformed,Exponential,Uniform,20,9,0.95
+Deltamax,Uniform,Uniform,210,2,0.95
+Robust Uninformed,Uniform,Uniform,210,2,0.95
+Variance,Exponential,Exponential,400,9,0.95
+Uninformed,Exponential,LogNormal,400,9,0.95
+Robust Uninformed,Uniform,LogNormal,400,2,0.7
+Deltamax,Exponential,Beta,20,2,0.95
+Deltamax,Exponential,Exponential,20,9,0.7
+Deltamax,Uniform,LogNormal,210,2,0.7
+Robust Uninformed,Exponential,LogNormal,20,2,0.95
+Deltamax,Uniform,Beta,400,15,0.7
+Entropy,Exponential,LogNormal,20,2,0.7
+Variance,Exponential,Beta,20,9,0.7
+Deltamax,Exponential,Exponential,400,15,0.7
+Robust Uninformed,Uniform,Uniform,210,9,0.95
+Uninformed,Uniform,Uniform,20,9,0.7
+Robust Uninformed,Exponential,Beta,210,15,0.7
+Deltamax,Uniform,Beta,400,9,0.7
+Deltamax,Uniform,Exponential,210,9,0.7
+Entropy,Exponential,Uniform,210,9,0.95
+Variance,Uniform,Exponential,20,2,0.95
+Robust Uninformed,Exponential,Exponential,210,2,0.95
+Variance,Uniform,Uniform,20,15,0.7
+Variance,Exponential,Uniform,400,9,0.7
+Entropy,Exponential,LogNormal,400,9,0.7
+Entropy,Uniform,Uniform,400,2,0.7
+Variance,Uniform,Beta,210,2,0.95
+Robust Uninformed,Exponential,Exponential,210,9,0.95
+Deltamax,Uniform,Exponential,20,2,0.95
+Uninformed,Uniform,Uniform,20,2,0.7
+Uninformed,Uniform,Beta,20,2,0.7
+Deltamax,Exponential,LogNormal,210,15,0.7
+Deltamax,Exponential,Uniform,210,9,0.95
+Robust Uninformed,Exponential,Uniform,210,15,0.95
+Uninformed,Uniform,LogNormal,210,9,0.95
+Variance,Uniform,LogNormal,210,9,0.7
+Deltamax,Exponential,LogNormal,400,15,0.95
+Uninformed,Exponential,LogNormal,400,9,0.7
+Entropy,Exponential,Exponential,20,2,0.7
+Variance,Uniform,LogNormal,400,2,0.7
+Robust Uninformed,Uniform,Exponential,210,9,0.95
+Robust Uninformed,Uniform,Beta,20,15,0.7
+Deltamax,Exponential,Beta,210,2,0.7
+Uninformed,Uniform,Beta,210,2,0.7
+Entropy,Exponential,LogNormal,20,9,0.7
+Robust Uninformed,Uniform,Uniform,210,2,0.7
+Entropy,Exponential,Beta,400,9,0.95
+Uninformed,Uniform,Exponential,400,15,0.7
+Variance,Uniform,Exponential,20,15,0.95
+Variance,Exponential,Uniform,210,2,0.7
+Entropy,Uniform,Beta,400,2,0.95
+Robust Uninformed,Uniform,Exponential,400,2,0.95
+Entropy,Uniform,Beta,210,9,0.95
+Robust Uninformed,Exponential,Beta,20,15,0.95
+Deltamax,Exponential,Exponential,210,2,0.7
+Robust Uninformed,Uniform,Beta,20,9,0.95
+Uninformed,Uniform,Beta,210,2,0.95
+Variance,Exponential,Uniform,20,9,0.95
+Robust Uninformed,Uniform,Exponential,400,2,0.7
+Variance,Exponential,Uniform,210,9,0.95
+Entropy,Exponential,Uniform,20,2,0.95
+Robust Uninformed,Exponential,Exponential,400,15,0.7
+Deltamax,Exponential,LogNormal,20,2,0.95
+Deltamax,Uniform,Exponential,400,15,0.7
+Uninformed,Exponential,Exponential,210,2,0.95
+Robust Uninformed,Exponential,Exponential,400,9,0.7
+Variance,Uniform,Exponential,210,15,0.7
+Uninformed,Uniform,Exponential,400,9,0.95
+Entropy,Uniform,Exponential,210,9,0.95
+Uninformed,Uniform,Uniform,210,9,0.7
+Robust Uninformed,Uniform,Uniform,400,2,0.7
+Uninformed,Exponential,Exponential,210,15,0.95
+Deltamax,Exponential,Uniform,400,15,0.7
+Deltamax,Exponential,LogNormal,20,9,0.95
+Robust Uninformed,Exponential,Uniform,400,2,0.95
+Robust Uninformed,Uniform,LogNormal,210,2,0.95
+Entropy,Uniform,LogNormal,210,15,0.7
+Entropy,Uniform,Exponential,20,2,0.95
+Robust Uninformed,Uniform,LogNormal,20,9,0.95
+Variance,Uniform,Beta,20,9,0.7
+Entropy,Uniform,Exponential,20,2,0.7
+Deltamax,Exponential,LogNormal,20,9,0.7
+Robust Uninformed,Uniform,LogNormal,20,15,0.7
+Entropy,Uniform,LogNormal,210,9,0.7
+Deltamax,Uniform,Exponential,400,15,0.95
+Uninformed,Exponential,Uniform,210,15,0.7
+Variance,Exponential,Uniform,400,15,0.95
+Variance,Exponential,Beta,400,9,0.7
+Variance,Uniform,Beta,210,9,0.95
+Entropy,Exponential,Beta,20,9,0.95
+Variance,Exponential,LogNormal,400,2,0.7
+Uninformed,Uniform,LogNormal,400,2,0.7
+Robust Uninformed,Exponential,Exponential,400,15,0.95
+Entropy,Uniform,Uniform,400,15,0.95
+Uninformed,Exponential,Exponential,400,2,0.95
+Uninformed,Uniform,Uniform,20,15,0.95
+Uninformed,Exponential,Uniform,20,9,0.7
+Uninformed,Uniform,LogNormal,210,15,0.7
+Entropy,Exponential,Beta,210,9,0.95
+Entropy,Exponential,Uniform,210,15,0.95
+Variance,Exponential,Exponential,20,15,0.7
+Robust Uninformed,Exponential,Beta,20,2,0.7
+Deltamax,Uniform,Uniform,210,9,0.95
+Uninformed,Exponential,Exponential,210,2,0.7
+Robust Uninformed,Exponential,Uniform,20,15,0.7
+Entropy,Uniform,Beta,400,15,0.95
+Uninformed,Uniform,Uniform,400,2,0.7
+Variance,Exponential,Beta,400,9,0.95
+Robust Uninformed,Exponential,LogNormal,400,9,0.95
+Uninformed,Exponential,Uniform,210,2,0.7
+Uninformed,Exponential,Exponential,20,9,0.7
+Uninformed,Exponential,Beta,20,15,0.95
+Deltamax,Uniform,Exponential,20,9,0.7
+Deltamax,Exponential,Exponential,210,15,0.95
+Deltamax,Uniform,LogNormal,210,2,0.95
+Variance,Exponential,Exponential,210,15,0.7
+Deltamax,Exponential,Exponential,400,2,0.95
+Uninformed,Exponential,LogNormal,210,9,0.7
+Deltamax,Uniform,Exponential,400,2,0.95
+Variance,Uniform,LogNormal,20,15,0.95
+Entropy,Exponential,LogNormal,210,15,0.7
+Entropy,Exponential,Beta,20,2,0.7
+Deltamax,Exponential,Uniform,400,2,0.95
+Uninformed,Exponential,Uniform,400,9,0.7
+Uninformed,Uniform,Beta,400,2,0.7
+Robust Uninformed,Exponential,LogNormal,210,2,0.7
+Robust Uninformed,Uniform,Uniform,20,15,0.7
+Deltamax,Exponential,Uniform,20,15,0.7
+Entropy,Uniform,LogNormal,210,2,0.7
+Entropy,Exponential,Exponential,400,9,0.7
+Variance,Exponential,Uniform,20,2,0.95
+Variance,Uniform,Beta,400,15,0.7
+Entropy,Exponential,LogNormal,20,15,0.95
+Entropy,Exponential,Uniform,400,9,0.7
+Deltamax,Exponential,Uniform,20,2,0.95
+Robust Uninformed,Uniform,Beta,20,2,0.7
+Uninformed,Exponential,LogNormal,20,9,0.95
+Variance,Exponential,Beta,400,2,0.7
+Variance,Exponential,Beta,20,2,0.7
+Entropy,Uniform,Beta,210,15,0.7
+Variance,Uniform,Beta,400,15,0.95
+Variance,Uniform,Exponential,20,9,0.95
+Deltamax,Uniform,Uniform,210,9,0.7
+Deltamax,Exponential,Uniform,400,9,0.95
+Entropy,Exponential,LogNormal,210,9,0.7
+Robust Uninformed,Exponential,LogNormal,400,2,0.7
+Variance,Exponential,Beta,400,15,0.95
+Variance,Exponential,Beta,400,15,0.7
+Entropy,Exponential,Beta,210,2,0.95
+Entropy,Uniform,Exponential,210,2,0.95
+Entropy,Uniform,Exponential,400,15,0.7
+Uninformed,Uniform,LogNormal,20,2,0.7
+Entropy,Uniform,Beta,20,9,0.7
+Variance,Exponential,LogNormal,400,15,0.95
+Entropy,Uniform,Beta,20,2,0.95
+Entropy,Uniform,Uniform,210,15,0.7
+Robust Uninformed,Uniform,Exponential,20,15,0.7
+Entropy,Exponential,Beta,20,15,0.7
+Entropy,Exponential,Exponential,20,9,0.7
+Deltamax,Uniform,Exponential,20,15,0.7
+Deltamax,Uniform,LogNormal,210,15,0.95
+Uninformed,Uniform,Uniform,20,2,0.95
+Robust Uninformed,Uniform,Exponential,400,15,0.7
+Robust Uninformed,Uniform,Exponential,210,9,0.7
+Variance,Uniform,Beta,400,9,0.7
+Deltamax,Uniform,LogNormal,400,9,0.95
+Deltamax,Uniform,LogNormal,400,15,0.7
+Robust Uninformed,Exponential,Beta,20,2,0.95
+Entropy,Uniform,Uniform,210,2,0.7
+Uninformed,Exponential,Uniform,400,15,0.95
+Uninformed,Uniform,Exponential,210,15,0.7
+Entropy,Uniform,LogNormal,400,2,0.7
+Uninformed,Uniform,Exponential,400,15,0.95
+Robust Uninformed,Exponential,Uniform,20,9,0.7
+Robust Uninformed,Uniform,LogNormal,20,9,0.7
+Entropy,Exponential,Uniform,210,9,0.7
+Variance,Uniform,Exponential,210,2,0.7
+Uninformed,Exponential,LogNormal,400,2,0.7
+Variance,Uniform,Uniform,210,2,0.7
+Variance,Exponential,LogNormal,20,2,0.95
+Entropy,Exponential,Exponential,210,9,0.95
+Entropy,Exponential,LogNormal,400,2,0.7
+Deltamax,Uniform,Beta,400,15,0.95
+Uninformed,Exponential,Exponential,210,9,0.7
+Uninformed,Uniform,Uniform,20,15,0.7
+Deltamax,Exponential,Exponential,20,15,0.7
+Deltamax,Exponential,LogNormal,400,2,0.7
+Entropy,Uniform,Beta,210,2,0.95
+Uninformed,Exponential,Beta,20,9,0.95
+Uninformed,Exponential,Exponential,20,9,0.95
+Robust Uninformed,Uniform,Beta,20,2,0.95
+Uninformed,Uniform,Uniform,400,9,0.7
+Robust Uninformed,Uniform,Uniform,400,2,0.95
+Entropy,Uniform,Uniform,20,9,0.7
+Deltamax,Uniform,Uniform,20,2,0.95
+Robust Uninformed,Exponential,LogNormal,20,15,0.7
+Robust Uninformed,Uniform,Exponential,20,15,0.95
+Robust Uninformed,Exponential,Beta,400,9,0.95
+Uninformed,Exponential,Exponential,400,9,0.7
+Uninformed,Exponential,Exponential,400,15,0.95
+Variance,Uniform,Exponential,20,2,0.7
+Variance,Uniform,Beta,20,2,0.7
+Entropy,Uniform,Beta,400,15,0.7
+Deltamax,Exponential,LogNormal,210,9,0.95
+Deltamax,Uniform,Beta,20,2,0.7
+Deltamax,Exponential,Beta,20,9,0.7
+Variance,Uniform,Exponential,400,2,0.95
+Deltamax,Uniform,Beta,210,9,0.7
+Entropy,Uniform,Beta,400,9,0.95
+Variance,Exponential,Beta,210,2,0.95
+Variance,Uniform,Exponential,20,9,0.7
+Entropy,Exponential,LogNormal,210,2,0.7
+Robust Uninformed,Exponential,LogNormal,210,15,0.7
+Robust Uninformed,Uniform,Beta,210,2,0.95
+Robust Uninformed,Uniform,Exponential,20,9,0.95
+Variance,Uniform,Exponential,210,15,0.95
+Uninformed,Uniform,Beta,20,2,0.95
+Entropy,Uniform,Exponential,400,9,0.95
+Entropy,Exponential,Beta,400,9,0.7
+Deltamax,Uniform,Uniform,210,15,0.95
+Uninformed,Uniform,Beta,400,15,0.7
+Robust Uninformed,Exponential,LogNormal,400,2,0.95
+Deltamax,Uniform,Uniform,20,9,0.7
+Entropy,Uniform,Beta,20,2,0.7
+Robust Uninformed,Uniform,Uniform,20,9,0.95
+Deltamax,Uniform,LogNormal,400,2,0.7
+Uninformed,Exponential,Exponential,400,15,0.7
+Deltamax,Exponential,LogNormal,210,2,0.95
+Variance,Exponential,Exponential,20,15,0.95
+Variance,Exponential,Beta,20,15,0.7
+Variance,Uniform,Beta,400,2,0.95
+Robust Uninformed,Exponential,Beta,400,15,0.7
+Robust Uninformed,Exponential,LogNormal,210,15,0.95
+Variance,Exponential,Exponential,210,9,0.7
+Robust Uninformed,Uniform,LogNormal,400,2,0.95
+Variance,Uniform,Uniform,400,9,0.95
+Uninformed,Uniform,Exponential,20,15,0.7
+Variance,Exponential,Exponential,210,9,0.95
+Deltamax,Uniform,Exponential,210,15,0.95
+Uninformed,Uniform,LogNormal,210,9,0.7
+Variance,Uniform,Uniform,400,2,0.95
+Variance,Exponential,LogNormal,20,9,0.95
+Robust Uninformed,Uniform,Uniform,20,2,0.95
+Uninformed,Uniform,LogNormal,20,15,0.7
+Variance,Uniform,Uniform,400,2,0.7
+Uninformed,Uniform,Uniform,210,15,0.7
+Entropy,Exponential,LogNormal,210,2,0.95
+Uninformed,Uniform,Exponential,20,2,0.95
+Variance,Exponential,LogNormal,400,15,0.7
+Variance,Uniform,Beta,20,9,0.95
+Variance,Uniform,Uniform,210,15,0.95
+Robust Uninformed,Exponential,Uniform,20,2,0.95
+Entropy,Exponential,Beta,20,15,0.95
+Deltamax,Uniform,LogNormal,20,2,0.7
+Entropy,Exponential,Beta,210,2,0.7
+Deltamax,Exponential,Exponential,400,9,0.7
+Robust Uninformed,Uniform,Exponential,210,15,0.95
+Uninformed,Uniform,LogNormal,210,2,0.95
+Robust Uninformed,Exponential,LogNormal,400,15,0.95
+Uninformed,Uniform,Exponential,20,9,0.95
+Variance,Uniform,Beta,400,9,0.95
+Robust Uninformed,Uniform,Exponential,210,2,0.7
+Deltamax,Exponential,Beta,20,9,0.95
+Robust Uninformed,Exponential,LogNormal,400,15,0.7
+Deltamax,Uniform,Beta,210,15,0.7
+Deltamax,Uniform,Beta,20,2,0.95
+Uninformed,Exponential,Beta,210,15,0.95
+Deltamax,Exponential,Beta,400,15,0.95
+Variance,Uniform,Uniform,20,9,0.95
+Uninformed,Uniform,Exponential,210,15,0.95
+Deltamax,Exponential,Beta,400,15,0.7
+Robust Uninformed,Exponential,Exponential,400,2,0.95
+Entropy,Uniform,Beta,210,9,0.7
+Variance,Exponential,Exponential,400,15,0.7
+Deltamax,Exponential,Uniform,20,2,0.7
+Entropy,Uniform,LogNormal,400,9,0.7
+Uninformed,Uniform,Beta,400,15,0.95
+Deltamax,Exponential,LogNormal,20,15,0.95
+Variance,Exponential,Uniform,400,9,0.95
+Deltamax,Uniform,Beta,400,9,0.95
+Variance,Uniform,Uniform,400,15,0.95
+Entropy,Exponential,LogNormal,210,15,0.95
+Robust Uninformed,Exponential,Exponential,400,2,0.7
+Uninformed,Uniform,Exponential,210,2,0.7
+Variance,Exponential,Uniform,20,2,0.7
+Entropy,Exponential,Beta,400,15,0.7
+Uninformed,Uniform,Exponential,400,2,0.95
+Deltamax,Uniform,Uniform,20,2,0.7
+Uninformed,Uniform,Uniform,210,2,0.7
+Robust Uninformed,Exponential,Beta,400,2,0.95
+Uninformed,Uniform,LogNormal,20,15,0.95
+Entropy,Exponential,Beta,210,9,0.7
+Deltamax,Exponential,Uniform,20,15,0.95
+Entropy,Exponential,LogNormal,20,15,0.7
+Entropy,Exponential,LogNormal,400,2,0.95
+Robust Uninformed,Uniform,Exponential,400,9,0.7
+Entropy,Uniform,Exponential,400,2,0.7
+Entropy,Exponential,Beta,20,9,0.7
+Entropy,Exponential,Beta,210,15,0.7
+Robust Uninformed,Uniform,Uniform,210,15,0.95
+Variance,Uniform,LogNormal,400,15,0.95

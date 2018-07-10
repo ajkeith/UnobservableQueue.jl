@@ -1,6 +1,7 @@
 include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
 using Base.Test
 using Distributions
+# using Plots; gr()
 
 @testset "Unobservable Queue" begin
     @testset "Queue Simulation" begin
@@ -13,8 +14,8 @@ using Distributions
         ncust = 10_000 # total number of customers generated
         timelimit = 1_000 # time limit for simulation
         seed = 8710 # rng seed
-        s1 = sim(ncust, timelimit, seed)
-        q1 = queue(c, adist, sdist)
+        s1 = Sim(ncust, timelimit, seed)
+        q1 = Queue(c, adist, sdist)
         df1 = runsim(s1, q1)
         @test mean(df1[:dtime] - df1[:stime]) ≈ (1 / μ) atol = 0.1
         @test df1[:atime] |> diff |> mean ≈ (1 / λ) atol = 0.1
@@ -23,16 +24,16 @@ using Distributions
 
         # G/G/15 queue
         c = 15 # number of servers
-        μa = (1 / c) * 0.99
-        μs = 1 / c
+        μa = (1 / 2) * 0.99
+        μs = 1 / 2
         σ = 0.9
-        adist = LogNormal(exp(1/μ), σ) # arrival distribution
-        sdist = LogNormal(exp(1/μ), σ) # service distribution (single server)
+        adist = LogNormal(exp(1/μa), σ) # arrival distribution
+        sdist = LogNormal(exp(1/μs), σ) # service distribution (single server)
         ncust = 10_000 # total number of customers generated
         timelimit = 10_000 # time limit for simulation
         seed = 3001 # rng seed
-        s2 = sim(ncust, timelimit, seed)
-        q2 = queue(c, adist, sdist)
+        s2 = Sim(ncust, timelimit, seed)
+        q2 = Queue(c, adist, sdist)
         df2 = runsim(s2, q2)
         @test mean(df2[:dtime] - df2[:stime]) ≈ mean(rand(sdist, 10_000)) atol = 100
         @test df2[:atime] |> diff |> mean ≈ mean(rand(adist, 10_000)) atol = 100
@@ -50,13 +51,13 @@ using Distributions
         ncust = 10_000 # total number of customers generated
         timelimit = 1_000 # time limit for simulation
         seed = 8710 # rng seed
-        s1 = sim(ncust, timelimit, seed)
-        q1 = queue(c, adist, sdist)
+        s1 = Sim(ncust, timelimit, seed)
+        q1 = Queue(c, adist, sdist)
         df1 = runsim(s1, q1)
-        simout = hcat(df1[:atime], df1[:stime], df1[:dorder], df1[:dtime], df1[:dtime] - df1[:stime], df1[:stime] - df1[:atime], df1[:aorder])
-        noiseout = disorder(simout, 2)
+        noiseout = disorder(df1, 2)
         @test count(noiseout[:DepartOrderErr] - noiseout[:DepartOrder] .== 0.0) / size(noiseout,1) ≈ 0.9 atol = 0.1
         @test all(sort(noiseout, :DepartMeas)[:DepartOrder] .== collect(1:size(noiseout,1)))
+        @test all(sort(noiseout, :DepartMeas)[:DepartOrder] .== sort(noiseout, :Depart)[:DepartOrder])
 
         # Deltamax algorithm
         o1 = [1,2,3,5,4]
@@ -73,8 +74,8 @@ using Distributions
         ncust = 10_000 # total number of customers generated
         timelimit = 10_000 # time limit for simulation
         seed = 3001 # rng seed
-        s2 = sim(ncust, timelimit, seed)
-        q2 = queue(c, adist, sdist)
+        s2 = Sim(ncust, timelimit, seed)
+        q2 = Queue(c, adist, sdist)
         df2 = runsim(s2, q2)
         outorder1 = sort(df1, :dorder)[:aorder]
         outorder2 = sort(df2, :dorder)[:aorder]
@@ -87,9 +88,64 @@ using Distributions
         cmax = 19
         A1, A2 = df1[:atime][1:1000], df2[:atime][1:1000]
         D1, D2 = df1[:dtime][1:1000], df2[:dtime][1:1000]
-        (cvar1, cunf1, VS1) = c_var_unf_slow(A1, D1, cmax)
-        (cvar2, cunf2, VS2) = c_var_unf_slow(A2, D2, cmax)
+        (cvar1, cunf1, VS1) = c_var_unf(A1, D1, cmax)
+        (cvar2, cunf2, VS2) = c_var_unf(A2, D2, cmax)
         @test cvar1 == 2 && cunf1 == 2
+
+        # Build distributions
+        (adist, sdist) = builddist(2, "Uniform", "LogNormal", 0.99)
+        (adist2, sdist2) = builddist(15, "Exponential", "Beta", 0.9)
+        @test (1/mean(adist)) / (2 * (1/mean(sdist))) ≈ 0.99 atol = 0.0001
+        @test (1/mean(adist2)) / (15 * (1/mean(sdist2))) ≈ 0.9 atol = 0.0001
+
+        # Convergence estimation
+        settings = ["Order" "Exponential" "Exponential" 400 9 0.9;
+                    "Order" "Uniform" "LogNormal" 400 15 0.9]
+        n_runs = 10 # limit runs for debugging and timing
+        n_methods = 3 # number of methods to compare
+        max_servers = 19 # max number of servers
+        obs_max = 1_000 # max observations available
+        time_limit = 10_000 # max simulation time
+        ϵ = 0.05 # convergence quality
+        window = 20 # observation window for convergence and estimates
+        step = 20 # how many observations to skip while calculating convergence
+        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, step)
+        c = settings[2,5] # number of servers
+        aname = convert(String, settings[2,2])
+        sname = convert(String, settings[2,3])
+        rho = settings[2,6]
+        (adist, sdist) = builddist(c, aname, sname, rho)
+        ncust = 1_000 # total number of customers generated
+        timelimit = 1_000 # time limit for simulation
+        seed = 8710 # rng seed
+        s1 = Sim(ncust, timelimit, seed)
+        q1 = Queue(c, adist, sdist)
+        df1 = runsim(s1, q1)
+        output = disorder(df1, c)
+        (conv, conv_meas, ests, ests_meas) = convergence(param_inf, output, c)
+        @test (conv[1] == 180) & (conv[2] == 0)
+        @test (conv_meas[1] == 180) & (conv_meas[2] == 0)
+        # Error estimation
+
+        # # Inference
+        # fn1 = "data\\design.csv"
+        # settings = readcsv(fn1, header = true)[1] # DOE runs
+        # n_runs = 10 # limit runs for debugging and timing
+        # n_methods = 6 # number of methods to compare
+        # max_servers = 19 # max number of servers
+        # obs_max = 1_000 # max observations available
+        # time_limit = 10_000 # max simulation time
+        # ϵ = 0.05 # convergence quality
+        # window = 10 # observation window for convergence and estimates
+        # step = 20 # how many observations to skip while calculating convergence
+        # param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, ϵ, window, step)
+        #
+        # obs_limit = settings[i, 4] # number of observations
+        # c_true = settings[i, 5] # actual number of servers
+        # fn2 = "QueueOutv18\\out" * "$i" * ".csv"
+        # q_out = readcsv(fn2, header = true)[1] # raw queue simulation results
+        # output = disorder(q_out, settings[i,:]) # queue sim results with noise
+        # lim = 20 # need at least 20 obs (since MAX_SERVERS = 19)
 
         # Need to check against DOE results
         # # Uninformed vs Order-based
