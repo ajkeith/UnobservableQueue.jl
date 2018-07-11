@@ -35,5 +35,6 @@ using JLD
 save("data\\output.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_meas", conv_meas, "raw", rraw[1], "raw_meas", rraw[2])
 data = load("data\\output.jld")
 
-x = rand()
-println(x)
+using Distributions, StatPlots
+h = histogram(err[1])
+histogram!(err[2])
