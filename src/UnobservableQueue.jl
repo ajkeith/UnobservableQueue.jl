@@ -28,6 +28,7 @@ mutable struct Paraminf
     window::Int64 # observation window for convergence estimate
     window_detail::Int64 # observation window for error estimate
     step::Int64 # how many observations to skip while calculating convergence
+    seed::Int64 # random number seed
 end
 
 # define customer behavior
@@ -291,9 +292,11 @@ end
 # separated convergence function
 function convergence(param_inf::Paraminf, queue_output::DataFrame, c_true::Int64)
     ind = 0
+    max_servers = param_inf.max_servers
     lim = param_inf.max_servers + 1
     n_methods = param_inf.n_methods
     obs_max = param_inf.obs_max
+    window = param_inf.window
     step = param_inf.step
     ϵ = param_inf.ϵ
     output = queue_output
@@ -384,6 +387,8 @@ function infer(param_inf::Paraminf)
     ϵ = param_inf.ϵ
     window = param_inf.window
     step = param_inf.step
+    seed = param_inf.seed
+    srand(seed)
     raw_true = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
     raw_meas = Array{Array{Int64}}(n_runs, n_methods) # c estimates by obs
     conv_true = zeros(n_runs, n_methods) + obs_max - window * step # num obs to conv

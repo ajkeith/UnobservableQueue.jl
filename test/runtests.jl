@@ -110,7 +110,8 @@ using Plots; gr()
         window = 20 # observation window for convergence estimate
         window_detail = 50 # observation window for error estimate
         step = 20 # how many observations to skip while calculating convergence
-        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
+        seed = 8710
+        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
         c = settings[2,5] # number of servers
         aname = convert(String, settings[2,2])
         sname = convert(String, settings[2,3])
@@ -140,7 +141,8 @@ using Plots; gr()
         window = 20 # observation window for convergence estimate
         window_detail = 50 # observation window for error estimate
         step = 20 # how many observations to skip while calculating convergence
-        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
+        seed = 8710
+        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
         ncust = 1_000 # total number of customers generated
         timelimit = 1_000 # time limit for simulation
         seed = 8710 # rng seed
@@ -172,7 +174,8 @@ using Plots; gr()
         window = 20 # observation window for convergence estimate
         window_detail = 50 # observation window for error estimate
         step = 20 # how many observations to skip while calculating convergence
-        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
+        seed = 8710
+        param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
         (rerr, rconv, rraw) = infer(param_inf)
         @test mean(rerr[1][:,1]) < mean(rerr[1][:,2])
         @test mean(rerr[2][:,1]) < mean(rerr[1][:,2])

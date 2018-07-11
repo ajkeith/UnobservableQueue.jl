@@ -1,5 +1,5 @@
 include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
-using Plots; gr()
+# using Plots; gr()
 
 # Small trial run
 cd("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl")
@@ -16,6 +16,24 @@ time_limit = 10_000 # max simulation time
 window = 20 # observation window for convergence estimate
 window_detail = 50 # observation window for error estimate
 step = 20 # how many observations to skip while calculating convergence
-n_runs = 10 # trial runs
+seed = 8710 # random number seed
+n_runs = 3 #size(settings,1) # trial runs
 param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
 (rerr, rconv, rraw) = infer(param_inf)
+
+using CSV, DataFrames
+err = DataFrame(rerr[1])
+CSV.write("data\\err.csv", err)
+err_meas = DataFrame(rerr[2])
+CSV.write("data\\err_meas.csv", err_meas)
+conv = DataFrame(rconv[1])
+CSV.write("data\\conv.csv", conv)
+conv_meas = DataFrame(rconv[2])
+CSV.write("data\\conv_meas.csv", conv_meas)
+
+using JLD
+save("data\\output.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_meas", conv_meas, "raw", rraw[1], "raw_meas", rraw[2])
+data = load("data\\output.jld")
+
+x = rand()
+println(x)
