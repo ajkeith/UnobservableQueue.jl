@@ -13,28 +13,25 @@ max_servers = 19 # max number of servers
 obs_max = 1_000 # max observations available
 time_limit = 10_000 # max simulation time
 ϵ = 0.05 # convergence quality
-window = 20 # observation window for convergence estimate
+window = 10 # observation window for convergence estimate
 window_detail = 50 # observation window for error estimate
 step = 20 # how many observations to skip while calculating convergence
-seed = 8710 # random number seed
+# seed = 8710 # random number seed
+seed2 = 3637
 n_runs = size(settings,1) # trial runs
-param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
+param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed2)
 (rerr, rconv, rraw) = infer(param_inf)
 
 using CSV, DataFrames
 err = DataFrame(rerr[1])
-CSV.write("data\\err.csv", err)
+CSV.write("data\\err2.csv", err)
 err_meas = DataFrame(rerr[2])
-CSV.write("data\\err_meas.csv", err_meas)
+CSV.write("data\\err_meas2.csv", err_meas)
 conv = DataFrame(rconv[1])
-CSV.write("data\\conv.csv", conv)
+CSV.write("data\\conv2.csv", conv)
 conv_meas = DataFrame(rconv[2])
-CSV.write("data\\conv_meas.csv", conv_meas)
+CSV.write("data\\conv_meas2.csv", conv_meas)
 
 using JLD
-save("data\\output.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_meas", conv_meas, "raw", rraw[1], "raw_meas", rraw[2])
-data = load("data\\output.jld")
-
-using Distributions, StatPlots
-h = histogram(err[1])
-histogram!(err[2])
+save("data\\output2.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_meas", conv_meas, "raw", rraw[1], "raw_meas", rraw[2])
+data2 = load("data\\output2.jld")
