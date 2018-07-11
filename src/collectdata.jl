@@ -17,8 +17,8 @@ window = 20 # observation window for convergence estimate
 window_detail = 50 # observation window for error estimate
 step = 20 # how many observations to skip while calculating convergence
 seed = 8710 # random number seed
-n_runs = 3 #size(settings,1) # trial runs
-param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step)
+n_runs = size(settings,1) # trial runs
+param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
 (rerr, rconv, rraw) = infer(param_inf)
 
 using CSV, DataFrames
