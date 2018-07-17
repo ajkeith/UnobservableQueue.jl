@@ -84,6 +84,21 @@ using Plots; gr()
         @test c_order([1,3,5]) == 3
         @test c_order(outorder1) == 2
 
+        # LCFS Order-based algorithm
+        c = 7 # number of servers
+        μ = 1 / c # service rate (mean service time is 1/μ) (single server)
+        λ = 0.9 # arrival rate (mean interarrival time is 1/λ)
+        adist = Exponential(1/λ) # arrival distribution
+        sdist = Exponential(1/μ) # service distribution (single server)
+        ncust = 10_000 # total number of customers generated
+        timelimit = 10_000 # time limit for simulation
+        seed = 3001 # rng seed
+        s2 = Sim(ncust, timelimit, seed)
+        q2 = Queue(c, adist, sdist)
+        lcfsorder = runsimLCFS(s2, q2)
+        chat, est = c_order_LCFS(lcfsorder, ncust)
+        @test chat == c
+
         # Variance algorithm
         cmax = 19
         A1, A2 = df1[:atime][1:1000], df2[:atime][1:1000]
@@ -97,7 +112,9 @@ using Plots; gr()
         (adist2, sdist2) = builddist(15, "Exponential", "Beta", 0.9)
         @test (1/mean(adist)) / (2 * (1/mean(sdist))) ≈ 0.99 atol = 0.0001
         @test (1/mean(adist2)) / (15 * (1/mean(sdist2))) ≈ 0.9 atol = 0.0001
+    end
 
+    @testset "Metrics" begin
         # Convergence estimation
         settings = ["Order" "Exponential" "Exponential" 400 9 0.9;
                     "Order" "Uniform" "LogNormal" 400 15 0.9]
