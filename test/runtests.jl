@@ -84,21 +84,6 @@ using Plots; gr()
         @test c_order([1,3,5]) == 3
         @test c_order(outorder1) == 2
 
-        # LCFS Order-based algorithm
-        c = 7 # number of servers
-        μ = 1 / c # service rate (mean service time is 1/μ) (single server)
-        λ = 0.9 # arrival rate (mean interarrival time is 1/λ)
-        adist = Exponential(1/λ) # arrival distribution
-        sdist = Exponential(1/μ) # service distribution (single server)
-        ncust = 10_000 # total number of customers generated
-        timelimit = 10_000 # time limit for simulation
-        seed = 3001 # rng seed
-        s2 = Sim(ncust, timelimit, seed)
-        q2 = Queue(c, adist, sdist)
-        df, lcfsorder = runsimLCFS(s2, q2)
-        chat, est = c_order_LCFS(lcfsorder, ncust)
-        @test chat == c
-
         # Variance and Uninformed algorithms
         cmax = 19
         A1, A2 = df1[:atime][1:1000], df2[:atime][1:1000]
@@ -106,25 +91,6 @@ using Plots; gr()
         (cvar1, cunf1, VS1) = c_var_unf(A1, D1, cmax)
         (cvar2, cunf2, VS2) = c_var_unf(A2, D2, cmax)
         @test cvar1 == 2 && cunf1 == 2
-
-        # LCFS Variance, Uninformed algorithm
-        c = 7 # number of servers
-        λ = 0.99 # arrival rate (mean interarrival time is 1/λ)
-        μ = 1 / c # service rate (mean service time is 1/μ) (single server)
-        adist = Exponential(1/λ) # arrival distribution
-        sdist = Exponential(1/μ) # service distribution (single server)
-        ncust = 500 # total number of customers generated
-        timelimit = 10_000 # time limit for simulation
-        seed = 1302 # rng seed
-        cmax = 19
-        s2 = Sim(ncust, timelimit, seed)
-        q2 = Queue(c, adist, sdist)
-        df1, lcfsorder = runsimLCFS(s2, q2)
-        df1[:atime][8]
-        A1, D1 = df1[:atime], df1[:dtime]
-        (cvar1, cunf1, VS1, B) = c_var_unf_LCFS(df1, A1, D1, cmax)
-        @test cvar1 == c
-        @test cunf1 == c
 
         # Build distributions
         (adist, sdist) = builddist(2, "Uniform", "LogNormal", 0.99)
@@ -218,4 +184,59 @@ using Plots; gr()
         @test (rconv[1][1,1] < rconv[1][1,2]) || (rconv[1][1,2] == 0)
         @test (rconv[2][1,1] < rconv[1][1,2]) || (rconv[2][1,2] == 0)
     end
+end
+
+
+include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
+@testset "LCFS" begin
+    # LCFS Order-based algorithm
+    c = 7 # number of servers
+    μ = 1 / c # service rate (mean service time is 1/μ) (single server)
+    λ = 0.9 # arrival rate (mean interarrival time is 1/λ)
+    adist = Exponential(1/λ) # arrival distribution
+    sdist = Exponential(1/μ) # service distribution (single server)
+    ncust = 10_000 # total number of customers generated
+    timelimit = 10_000 # time limit for simulation
+    seed = 3001 # rng seed
+    s2 = Sim(ncust, timelimit, seed)
+    q2 = Queue(c, adist, sdist)
+    df = runsimLCFS(s2, q2)
+    lcfsorder, dfl = lcfs(df, :dtime)
+    chat, est = c_order_LCFS(lcfsorder)
+    @test chat == c
+
+    # LCFS Variance, Uninformed algorithm
+    c = 7 # number of servers
+    λ = 0.99 # arrival rate (mean interarrival time is 1/λ)
+    μ = 1 / c # service rate (mean service time is 1/μ) (single server)
+    adist = Exponential(1/λ) # arrival distribution
+    sdist = Exponential(1/μ) # service distribution (single server)
+    ncust = 500 # total number of customers generated
+    timelimit = 10_000 # time limit for simulation
+    seed = 1302 # rng seed
+    cmax = 19
+    s2 = Sim(ncust, timelimit, seed)
+    q2 = Queue(c, adist, sdist)
+    df1 = runsimLCFS(s2, q2)
+    A1, D1 = df1[:atime], df1[:dtime]
+    (cvar1, cunf1, VS1) = c_var_unf_LCFS(df1, A1, D1, cmax)
+    @test cvar1 == c
+    @test cunf1 == c
+
+    # LCFS Introduce observation error into true data
+    # LCFS Introduce observation error into true data
+    c = 2 # number of servers
+    λ = 0.9 # arrival rate (mean interarrival time is 1/λ)
+    μ = 1 / c # service rate (mean service time is 1/μ) (single server)
+    adist = Exponential(1/λ) # arrival distribution
+    sdist = Exponential(1/μ) # service distribution (single server)
+    ncust = 10_000 # total number of customers generated
+    timelimit = 1_000 # time limit for simulation
+    seed = 8710 # rng seed
+    s1 = Sim(ncust, timelimit, seed)
+    q1 = Queue(c, adist, sdist)
+    df1 = runsimLCFS(s1, q1)
+    noiseout = disorderLCFS(df1)
+    @test all(sort(noiseout, :dmeas)[:dorder] .== collect(1:size(noiseout,1)))
+    @test all(sort(noiseout, :dmeas)[:dorder] .== sort(noiseout, :dtime)[:dorder])
 end
