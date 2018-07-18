@@ -32,6 +32,7 @@ function runsim(s::Sim, q::Queue)
     c = q.c
     adist = q.adist
     sdist = q.sdist
+    srand(seed) # set rng seed
     # output of queue simulation
     # arrive order, arrive time, start service time, depart order, depart time
     arriveorder = collect(1:ncust)
@@ -39,7 +40,6 @@ function runsim(s::Sim, q::Queue)
     starttime = zeros(ncust)
     departtime = zeros(ncust)
     # setup and run simulation
-    srand(seed) # set rng seed
     queuesim = Simulation() # initialize simulation environment
     server = Resource(queuesim, c) # initialize servers
     for i = 1:ncust # initialize customers

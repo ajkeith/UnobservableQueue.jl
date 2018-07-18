@@ -95,17 +95,36 @@ using Plots; gr()
         seed = 3001 # rng seed
         s2 = Sim(ncust, timelimit, seed)
         q2 = Queue(c, adist, sdist)
-        lcfsorder = runsimLCFS(s2, q2)
+        df, lcfsorder = runsimLCFS(s2, q2)
         chat, est = c_order_LCFS(lcfsorder, ncust)
         @test chat == c
 
-        # Variance algorithm
+        # Variance and Uninformed algorithms
         cmax = 19
         A1, A2 = df1[:atime][1:1000], df2[:atime][1:1000]
         D1, D2 = df1[:dtime][1:1000], df2[:dtime][1:1000]
         (cvar1, cunf1, VS1) = c_var_unf(A1, D1, cmax)
         (cvar2, cunf2, VS2) = c_var_unf(A2, D2, cmax)
         @test cvar1 == 2 && cunf1 == 2
+
+        # LCFS Variance, Uninformed algorithm
+        c = 7 # number of servers
+        λ = 0.99 # arrival rate (mean interarrival time is 1/λ)
+        μ = 1 / c # service rate (mean service time is 1/μ) (single server)
+        adist = Exponential(1/λ) # arrival distribution
+        sdist = Exponential(1/μ) # service distribution (single server)
+        ncust = 500 # total number of customers generated
+        timelimit = 10_000 # time limit for simulation
+        seed = 1302 # rng seed
+        cmax = 19
+        s2 = Sim(ncust, timelimit, seed)
+        q2 = Queue(c, adist, sdist)
+        df1, lcfsorder = runsimLCFS(s2, q2)
+        df1[:atime][8]
+        A1, D1 = df1[:atime], df1[:dtime]
+        (cvar1, cunf1, VS1, B) = c_var_unf_LCFS(df1, A1, D1, cmax)
+        @test cvar1 == c
+        @test cunf1 == c
 
         # Build distributions
         (adist, sdist) = builddist(2, "Uniform", "LogNormal", 0.99)
@@ -142,7 +161,7 @@ using Plots; gr()
         df1 = runsim(s1, q1)
         output = disorder(df1, c)
         (conv, conv_meas, ests, ests_meas) = convergence(param_inf, output, c)
-        @test (conv[1] > 0) && (conv[1] < 400) && (conv[2] == 0)
+        @test (conv[1] > 0) && (conv[1] < 400) && ((conv[2] == 0) || conv[2] > conv[1])
         @test (conv[1] == conv_meas[1]) && (conv_meas[2] == 0)
 
         # Error estimation
