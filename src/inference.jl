@@ -53,8 +53,12 @@ end
 # Calculate aprpoximate convergence
 # Input: parametrs, queueing output data, number of servers
 # Output: number of observations to approximately converge
-function convergence(param_inf::Paraminf, queue_output::DataFrame, c_true::Int64)
-    ind = 0
+function convergence(param_inf::Paraminf, indrun::Int)
+    settings = param_inf.settings
+    aname = convert(String, settings[indrun, 2]) # arrival distribution
+    sname = convert(String, settings[indrun, 3]) # service distribution
+    c_true = settings[indrun, 5] # actual number of servers
+    rho = settings[indrun, 6] # traffic intensity
     max_servers = param_inf.max_servers
     lim = param_inf.max_servers + 1
     n_methods = param_inf.n_methods
@@ -62,30 +66,32 @@ function convergence(param_inf::Paraminf, queue_output::DataFrame, c_true::Int64
     window = param_inf.window
     step = param_inf.step
     ϵ = param_inf.ϵ
-    output = queue_output
     bool_true = falses(n_methods)
     bool_meas = falses(n_methods)
     conv_true = zeros(n_methods)
     conv_meas = zeros(n_methods)
-    array_size = floor(Int64, (obs_max - 20) / step)
+    array_size = floor(Int64, (obs_max - step) / step)
     ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
     ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
-    while lim <= (obs_max - step)
-      # println(lim)
-      lim = lim + step
-      ind += 1
-      # true departure
-      out_order = sort(output[1:lim,:], :DepartOrder)[:ArriveOrder]
-      ro = c_order(out_order)
-      (rv, ru, VS) = c_var_unf(output[:Arrive][1:lim], output[:Depart][1:lim], max_servers)
-      # time error
-      out_order_meas = sort(output[1:lim,:], :DepartMeas)[:ArriveOrder]
-      ro_meas = c_order(out_order_meas)
-      (rv_meas, ru_meas, VS_meas) = c_var_unf(output[:Arrive][1:lim], output[:DepartMeas][1:lim], max_servers)
-      # record results
-      ests_true[ind, :] = [ro rv ru]
-      ests_meas[ind, :] = [ro_meas rv_meas ru_meas]
-      if ind >= window
+    (adist, sdist) = builddist(c_true, aname, sname, rho)
+    q = Queue(c_true, adist, sdist)
+    seed = rand(1:1000)
+    for (ind, obs) in enumerate(lim:step:(obs_max - step))
+        s = Sim(obs, time_limit, seed)
+        q_out = runsim(s,q)
+        output = disorder(q_out, c_true) # queue sim results with noise
+        # true departure
+        out_order = sort(output, :DepartOrder)[:ArriveOrder]
+        ro = c_order(out_order)
+        (rv, ru, VS) = c_var_unf(output[:Arrive], output[:Depart], max_servers)
+        # time error
+        out_order_meas = sort(output, :DepartMeas)[:ArriveOrder]
+        ro_meas = c_order(out_order_meas)
+        (rv_meas, ru_meas, VS_meas) = c_var_unf(output[:Arrive], output[:DepartMeas], max_servers)
+        # record results
+        ests_true[ind, :] = [ro rv ru]
+        ests_meas[ind, :] = [ro_meas rv_meas ru_meas]
+        if ind >= window
         for j = 1:n_methods
           if !bool_true[j] && mean(abs.(ests_true[(ind - window + 1):(ind), j] - c_true)) < ϵ
             conv_true[j] = (ind - window + 1) * step
@@ -96,7 +102,7 @@ function convergence(param_inf::Paraminf, queue_output::DataFrame, c_true::Int64
             bool_meas[j] = true
           end
         end
-      end
+        end
     end
     (conv_true, conv_meas, ests_true, ests_meas)
 end
@@ -105,7 +111,13 @@ end
 # Calculate estimation error
 # Input: parametrs, queue output data, obs limit, number of servers
 # Output: average estimation error in estimation window
-function esterror(param_inf::Paraminf, output::DataFrame, obs_limit::Int64, c_true::Int64)
+function esterror(param_inf::Paraminf, indrun::Int)
+    settings = param_inf.settings
+    aname = convert(String, settings[indrun, 2]) # arrival distribution
+    sname = convert(String, settings[indrun, 3]) # service distribution
+    obs_limit = settings[indrun, 4] # number of runs
+    c_true = settings[indrun, 5] # actual number of servers
+    rho = settings[indrun, 6] # traffic intensity
     window_detail = param_inf.window_detail
     n_methods = param_inf.n_methods
     max_servers = param_inf.max_servers
@@ -115,20 +127,24 @@ function esterror(param_inf::Paraminf, output::DataFrame, obs_limit::Int64, c_tr
     detail_meas = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates
     error_true = zeros(n_methods)
     error_meas = zeros(n_methods)
-    ind = 0
-    for lim = ind_l:ind_u
-      ind += 1
-      # true departure
-      out_order = sort(output[1:lim,:], :DepartOrder)[:ArriveOrder]
-      ro = c_order(out_order)
-      (rv, ru, VS) = c_var_unf(output[:Arrive][1:lim], output[:Depart][1:lim], max_servers)
-      # time error
-      out_order_meas = sort(output[1:lim,:], :DepartMeas)[:ArriveOrder]
-      ro_meas = c_order(out_order_meas)
-      (rv_meas, ru_meas, VS_meas) = c_var_unf(output[:Arrive][1:lim], output[:DepartMeas][1:lim], max_servers)
-      # record results
-      detail_true[ind, :] = [ro rv ru]
-      detail_meas[ind, :] = [ro_meas rv_meas ru_meas]
+    (adist, sdist) = builddist(c_true, aname, sname, rho)
+    q = Queue(c_true, adist, sdist)
+    seed = rand(1:1000)
+    for (ind, obs) in enumerate(ind_l:ind_u)
+        s = Sim(obs, time_limit, seed)
+        q_out = runsim(s,q)
+        output = disorder(q_out, c_true) # queue sim results with noise
+        # true departure
+        out_order = sort(output, :DepartOrder)[:ArriveOrder]
+        ro = c_order(out_order)
+        (rv, ru, VS) = c_var_unf(output[:Arrive], output[:Depart], max_servers)
+        # time error
+        out_order_meas = sort(output, :DepartMeas)[:ArriveOrder]
+        ro_meas = c_order(out_order_meas)
+        (rv_meas, ru_meas, VS_meas) = c_var_unf(output[:Arrive], output[:DepartMeas], max_servers)
+        # record results
+        detail_true[ind, :] = [ro rv ru]
+        detail_meas[ind, :] = [ro_meas rv_meas ru_meas]
     end
     for j = 1:n_methods
         error_true[j] = mean(abs.(detail_true[:, j] - c_true))
@@ -165,28 +181,14 @@ function infer(param_inf::Paraminf)
     for i = 1:n_runs
         # initialize constants and data structures
         print("Run $i: ") # status update
-        aname = settings[i, 2] # arrival distribution
-        sname = settings[i, 3] # service distribution
-        obs_limit = settings[i, 4] # number of observations
-        c_true = settings[i, 5] # actual number of servers
-        rho = settings[i, 6] # traffic intensity
-        (adist, sdist) = builddist(c_true, aname, sname, rho)
-        q = Queue(c_true, adist, sdist)
-        s = Sim(obs_max, time_limit, rand(1:1000))
-        q_out = runsim(s,q)
-        output = disorder(q_out, c_true) # queue sim results with noise
         array_size = floor(Int64, (obs_max - 20) / step)
         ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
         ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
         ests_err = zeros(Int64, array_size, n_methods) # c estimates by obs by run
         print("conv, ")
-        (conv_true_single, conv_meas_single, ests_single, ests_meas_single) = convergence(param_inf, output, c_true)
+        (conv_true[i,:], conv_meas[i,:], ests_single, ests_meas_single) = convergence(param_inf, i)
         println("err")
-        (error_true_single, error_meas_single, detail_single, detail_meas_single) = esterror(param_inf, output, obs_limit, c_true)
-        conv_true[i,:] = conv_true_single
-        conv_meas[i,:] = conv_meas_single
-        error_true[i,:] = error_true_single
-        error_meas[i,:] = error_meas_single
+        (error_true[i,:], error_meas[i,:], detail_single, detail_meas_single) = esterror(param_inf, i)
         for j = 1:n_methods
             raw_true[i,j] = ests_single[:,j]
             raw_meas[i,j] = ests_meas_single[:,j]
