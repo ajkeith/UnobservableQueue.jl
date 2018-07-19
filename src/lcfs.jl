@@ -78,8 +78,10 @@ end
 function firstdepart(df::DataFrame, n::Int, t::Float64)
     dfdepart = sort(df, :dtime)
     indt = findfirst(dfdepart[:dtime] .> t, true)
+    indt == 0 ? indt = size(dfdepart[:dtime],1) : nothing
     indn = findfirst(dfdepart[:nd][indt:end], n)
-    dfdepart[:dtime][indn]
+    indn == 0 ? indn = size(dfdepart[:nd][indt:end],1) : nothing
+    dfdepart[:dtime][indt + indn - 1]
 end
 
 function c_order_LCFS(lcfsorder::Vector{Int64})
@@ -101,7 +103,7 @@ function c_order_LCFS(lcfsorder::Vector{Int64})
         end
         est[i] = length(service)
     end
-    maximum(est), est
+    maximum(est)
 end
 
 # Summary Estimator
@@ -145,59 +147,63 @@ function c_var_unf_LCFS(df::DataFrame, A::Vector{Float64}, D::Vector{Float64}, c
   r2 = max_undef + 1
   (r1, r2, VS)
 end
-#
-# # Convergence Estimator
-# # Calculate aprpoximate convergence
-# # Input: parametrs, queueing output data, number of servers
-# # Output: number of observations to approximately converge
-# function convergence(param_inf::Paraminf, queue_output::DataFrame, c_true::Int64)
-#     ind = 0
-#     max_servers = param_inf.max_servers
-#     lim = param_inf.max_servers + 1
-#     n_methods = param_inf.n_methods
-#     obs_max = param_inf.obs_max
-#     window = param_inf.window
-#     step = param_inf.step
-#     ϵ = param_inf.ϵ
-#     output = queue_output
-#     bool_true = falses(n_methods)
-#     bool_meas = falses(n_methods)
-#     conv_true = zeros(n_methods)
-#     conv_meas = zeros(n_methods)
-#     array_size = floor(Int64, (obs_max - 20) / step)
-#     ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
-#     ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
-#     while lim <= (obs_max - step)
-#       # println(lim)
-#       lim = lim + step
-#       ind += 1
-#       # true departure
-#       out_order = sort(output[1:lim,:], :DepartOrder)[:ArriveOrder]
-#       ro = c_order(out_order)
-#       (rv, ru, VS) = c_var_unf_LCFS(output[:Arrive][1:lim], output[:Depart][1:lim], max_servers)
-#       # time error
-#       out_order_meas = sort(output[1:lim,:], :DepartMeas)[:ArriveOrder]
-#       ro_meas = c_order(out_order_meas)
-#       (rv_meas, ru_meas, VS_meas) = c_var_unf(output[:Arrive][1:lim], output[:DepartMeas][1:lim], max_servers)
-#       # record results
-#       ests_true[ind, :] = [ro rv ru]
-#       ests_meas[ind, :] = [ro_meas rv_meas ru_meas]
-#       if ind >= window
-#         for j = 1:n_methods
-#           if !bool_true[j] && mean(abs.(ests_true[(ind - window + 1):(ind), j] - c_true)) < ϵ
-#             conv_true[j] = (ind - window + 1) * step
-#             bool_true[j] = true
-#           end
-#           if !bool_meas[j] && mean(abs.(ests_meas[(ind - window + 1):(ind), j]- c_true)) < ϵ
-#             conv_meas[j] = (ind - window + 1) * step
-#             bool_meas[j] = true
-#           end
-#         end
-#       end
-#     end
-#     (conv_true, conv_meas, ests_true, ests_meas)
-# end
-#
+
+# Convergence Estimator
+# Calculate aprpoximate convergence
+# Input: parametrs, queueing output data, number of servers
+# Output: number of observations to approximately converge
+function convergenceLCFS(param_inf::Paraminf, queue_output::DataFrame, c_true::Int64)
+    ind = 0
+    max_servers = param_inf.max_servers
+    lim = param_inf.max_servers + 1
+    n_methods = param_inf.n_methods
+    obs_max = param_inf.obs_max
+    window = param_inf.window
+    step = param_inf.step
+    ϵ = param_inf.ϵ
+    output = queue_output
+    bool_true = falses(n_methods)
+    bool_meas = falses(n_methods)
+    conv_true = zeros(n_methods)
+    conv_meas = zeros(n_methods)
+    array_size = floor(Int64, (obs_max - 20) / step)
+    ests_true = zeros(Int64, array_size, n_methods) # c estimates by obs by run
+    ests_meas = zeros(Int64, array_size, n_methods) # c estimates by obs by run
+    while lim <= (obs_max - step)
+      lim = lim + step
+      ind += 1
+      # true departure
+      s = Sim(ncust, timelimit, seed)
+      q = Queue(c, adist, sdist)
+      simout = runsimLCFS(s, q)
+      A1, D1 = simout[:atime], simout[:dtime]
+      lcfsorder, dfl = lcfs(simout, :dtime)
+      rol = c_order_LCFS(lcfsorder)
+      (rvl, rul, VSl) = c_var_unf_LCFS(simout, A1, D1, cmax)
+      ests_true[ind, :] = [rol rvl rul]
+      # time error
+      noiseout = disorderLCFS(simout)
+      lcfsorder_meas, dfl_meas = lcfs(noiseout, :dmeas)
+      rol_meas = c_order_LCFS(lcfsorder_meas)
+      (rvl_meas, rul_meas, VSl_meas) = c_var_unf_LCFS(noiseout, noiseout[:atime], noiseout[:dmeas], max_servers)
+      # record results
+      ests_meas[ind, :] = [rol_meas rvl_meas rul_meas]
+      if ind >= window
+        for j = 1:n_methods
+          if !bool_true[j] && mean(abs.(ests_true[(ind - window + 1):(ind), j] - c_true)) < ϵ
+            conv_true[j] = (ind - window + 1) * step
+            bool_true[j] = true
+          end
+          if !bool_meas[j] && mean(abs.(ests_meas[(ind - window + 1):(ind), j]- c_true)) < ϵ
+            conv_meas[j] = (ind - window + 1) * step
+            bool_meas[j] = true
+          end
+        end
+      end
+    end
+    (conv_true, conv_meas, ests_true, ests_meas)
+end
+
 # # Estimation Error Estimator
 # # Calculate estimation error
 # # Input: parametrs, queue output data, obs limit, number of servers
