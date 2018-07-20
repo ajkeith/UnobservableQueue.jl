@@ -17,12 +17,12 @@ time_limit = 10_000 # max simulation time
 window = 10 # observation window for convergence estimate
 window_detail = 50 # observation window for error estimate
 step = 20 # how many observations to skip while calculating convergence
-trialruns = 10 # how many runs to check data transfer
+trialruns = 5 # how many runs to check data transfer
 
 # FCFS Data Collection Part 1
 seed = 8710
-n_runs = trialruns
-# n_runs = size(settings,1)
+# n_runs = trialruns
+n_runs = size(settings,1)
 param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
 @time (rerr, rconv, rraw) = infer(param_inf)
 err = DataFrame(rerr[1])
@@ -38,8 +38,8 @@ save("data\\output11.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_
 
 # FCFS Data Collection Part 2
 seed2 = 3637
-n_runs = trialruns
-# n_runs = size(settings,1)
+# n_runs = trialruns
+n_runs = size(settings,1)
 param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed2)
 @time (rerr, rconv, rraw) = infer(param_inf)
 err = DataFrame(rerr[1])
@@ -55,8 +55,8 @@ save("data\\output12.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_
 
 # LCFS Data Collection Part 1
 seed = 8710
-n_runs = trialruns
-# n_runs = size(settings,1)
+# n_runs = trialruns
+n_runs = size(settings,1)
 param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
 @time (rerr, rconv, rraw) = inferLCFS(param_inf)
 err = DataFrame(rerr[1])
