@@ -1,7 +1,8 @@
+using CSV, DataFrames, JLD
 include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
 # using Plots; gr()
 
-# Small trial run
+# Initial settings
 cd("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl")
 fn = "data\\design.csv"
 input = readcsv(fn, header = true)[1]
@@ -16,22 +17,55 @@ time_limit = 10_000 # max simulation time
 window = 10 # observation window for convergence estimate
 window_detail = 50 # observation window for error estimate
 step = 20 # how many observations to skip while calculating convergence
-# seed = 8710 # random number seed
-seed2 = 3637
-n_runs = size(settings,1) # trial runs
-param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed2)
-(rerr, rconv, rraw) = infer(param_inf)
+trialruns = 10 # how many runs to check data transfer
 
-using CSV, DataFrames
+# FCFS Data Collection Part 1
+seed = 8710
+n_runs = trialruns
+# n_runs = size(settings,1)
+param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
+@time (rerr, rconv, rraw) = infer(param_inf)
 err = DataFrame(rerr[1])
-CSV.write("data\\err2.csv", err)
+CSV.write("data\\err11.csv", err)
 err_meas = DataFrame(rerr[2])
-CSV.write("data\\err_meas2.csv", err_meas)
+CSV.write("data\\err_meas11.csv", err_meas)
 conv = DataFrame(rconv[1])
-CSV.write("data\\conv2.csv", conv)
+CSV.write("data\\conv11.csv", conv)
 conv_meas = DataFrame(rconv[2])
-CSV.write("data\\conv_meas2.csv", conv_meas)
+CSV.write("data\\conv_meas11.csv", conv_meas)
+save("data\\output11.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_meas", conv_meas, "raw", rraw[1], "raw_meas", rraw[2])
+# data11 = load("data\\output11.jld")
 
-using JLD
-save("data\\output2.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_meas", conv_meas, "raw", rraw[1], "raw_meas", rraw[2])
-data2 = load("data\\output2.jld")
+# FCFS Data Collection Part 2
+seed2 = 3637
+n_runs = trialruns
+# n_runs = size(settings,1)
+param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed2)
+@time (rerr, rconv, rraw) = infer(param_inf)
+err = DataFrame(rerr[1])
+CSV.write("data\\err12.csv", err)
+err_meas = DataFrame(rerr[2])
+CSV.write("data\\err_meas12.csv", err_meas)
+conv = DataFrame(rconv[1])
+CSV.write("data\\conv12.csv", conv)
+conv_meas = DataFrame(rconv[2])
+CSV.write("data\\conv_meas12.csv", conv_meas)
+save("data\\output12.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_meas", conv_meas, "raw", rraw[1], "raw_meas", rraw[2])
+# data12 = load("data\\output12.jld")
+
+# LCFS Data Collection Part 1
+seed = 8710
+n_runs = trialruns
+# n_runs = size(settings,1)
+param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
+@time (rerr, rconv, rraw) = inferLCFS(param_inf)
+err = DataFrame(rerr[1])
+CSV.write("data\\err13.csv", err)
+err_meas = DataFrame(rerr[2])
+CSV.write("data\\err_meas13.csv", err_meas)
+conv = DataFrame(rconv[1])
+CSV.write("data\\conv13.csv", conv)
+conv_meas = DataFrame(rconv[2])
+CSV.write("data\\conv_meas13.csv", conv_meas)
+save("data\\output13.jld","err", err, "err_meas", err_meas, "conv", conv, "conv_meas", conv_meas, "raw", rraw[1], "raw_meas", rraw[2])
+# data13 = load("data\\output13.jld")

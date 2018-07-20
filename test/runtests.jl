@@ -1,7 +1,7 @@
 include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
 using Base.Test
 using Distributions
-using Plots; gr()
+# using Plots; gr()
 
 @testset "Unobservable Queue" begin
     @testset "Queue Simulation" begin
@@ -160,8 +160,6 @@ using Plots; gr()
     end
 end
 
-
-include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
 @testset "LCFS" begin
     # LCFS Order-based algorithm
     c = 7 # number of servers
@@ -219,134 +217,62 @@ include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\Un
     noiseout = disorderLCFS(df1)
     @test all(sort(noiseout, :dmeas)[:dorder] .== collect(1:size(noiseout,1)))
     @test all(sort(noiseout, :dmeas)[:dorder] .== sort(noiseout, :dtime)[:dorder])
+
+    # LCFS Convergence estimation
+    settings = ["Order" "Exponential" "Exponential" 400 9 0.9;
+                "Order" "Uniform" "LogNormal" 400 15 0.9]
+    n_runs = 10 # limit runs for debugging and timing
+    n_methods = 3 # number of methods to compare
+    max_servers = 19 # max number of servers
+    obs_max = 1_000 # max observations available
+    time_limit = 10_000 # max simulation time
+    ϵ = 0.05 # convergence quality
+    window = 20 # observation window for convergence estimate
+    window_detail = 50 # observation window for error estimate
+    step = 20 # how many observations to skip while calculating convergence
+    seed = 8710
+    param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
+    @time (conv, conv_meas, ests, ests_meas) = convergenceLCFS(param_inf,1)
+    @test (conv[1] > 0) && (conv[1] < 400) && ((conv[2] == 0) || conv[2] >= conv[1])
+    @test (conv[1] == conv_meas[1]) && (conv_meas[2] >= conv_meas[1])
+
+    # LCFS Error estimation
+    settings = ["Order" "Exponential" "Exponential" 400 9 0.9;
+                "Order" "Uniform" "LogNormal" 400 15 0.9;
+                "Order" "LogNormal" "LogNormal" 60 9 0.9]
+    n_runs = 10 # limit runs for debugging and timing
+    n_methods = 3 # number of methods to compare
+    max_servers = 19 # max number of servers
+    obs_max = 1_000 # max observations available
+    time_limit = 10_000 # max simulation time
+    ϵ = 0.05 # convergence quality
+    window = 20 # observation window for convergence estimate
+    window_detail = 50 # observation window for error estimate
+    step = 20 # how many observations to skip while calculating convergence
+    seed = 8710
+    param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
+    @time (err, err_meas, detail, detail_meas) = esterrorLCFS(param_inf, 3)
+    @test err[1] < err[2]
+    @test err_meas[1] < err_meas[2]
+
+    # LCFS Comparison
+    settings = ["Order" "Exponential" "Exponential" 400 9 0.9;
+                "Order" "Uniform" "LogNormal" 400 15 0.9;
+                "Order" "LogNormal" "LogNormal" 60 9 0.9]
+    n_runs = size(settings,1) # experimental runs
+    n_methods = 3 # number of methods to compare
+    max_servers = 19 # max number of servers
+    obs_max = 1_000 # max observations available
+    time_limit = 10_000 # max simulation time
+    ϵ = 0.05 # convergence quality
+    window = 20 # observation window for convergence estimate
+    window_detail = 50 # observation window for error estimate
+    step = 20 # how many observations to skip while calculating convergence
+    seed = 8710
+    param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
+    @time (rerr, rconv, rraw) = inferLCFS(param_inf)
+    @test mean(rerr[1][:,1]) < mean(rerr[1][:,2])
+    @test mean(rerr[2][:,1]) < mean(rerr[2][:,2])
+    @test (rconv[1][1,1] <= rconv[1][1,2]) || (rconv[1][1,2] == 0)
+    @test (rconv[2][1,1] <= rconv[2][1,2]) || (rconv[2][1,2] == 0)
 end
-#
-# include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
-# # Convergence estimation
-# settings = ["Order" "Exponential" "Exponential" 400 9 0.9;
-#             "Order" "Uniform" "LogNormal" 400 15 0.9;
-#             "Order" "Exponential" "Exponential" 500 7 0.9]
-# n_runs = 10 # limit runs for debugging and timing
-# n_methods = 3 # number of methods to compare
-# max_servers = 19 # max number of servers
-# obs_max = 1_000 # max observations available
-# time_limit = 10_000 # max simulation time
-# ϵ = 0.05 # convergence quality
-# window = 20 # observation window for convergence estimate
-# window_detail = 50 # observation window for error estimate
-# step = 20 # how many observations to skip while calculating convergence
-# seed = 8710
-# param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
-# runnum = 3
-# c = settings[runnum, 5] # number of servers
-# aname = convert(String, settings[runnum, 2])
-# sname = convert(String, settings[runnum, 3])
-# rho = settings[runnum, 6]
-# (adist, sdist) = builddist(c, aname, sname, rho)
-# ncust = 1_000 # total number of customers generated
-# timelimit = 1_000 # time limit for simulation
-# seed = 8710 # rng seed
-# s1 = Sim(ncust, timelimit, seed)
-# q1 = Queue(c, adist, sdist)
-# df1 = runsimLCFS(s1, q1)
-# output = disorderLCFS(df1)
-# (conv, conv_meas, ests, ests_meas) = convergenceLCFS(param_inf, output, c)
-# @test (conv[1] > 0) && (conv[1] < 400) && ((conv[2] == 0) || conv[2] > conv[1])
-# @test (conv[1] == conv_meas[1]) && (conv_meas[2] == 0)
-#
-#
-#
-# # LCFS Variance, Uninformed algorithm
-# c = 13 # number of servers
-# λ = 1 # arrival rate (mean interarrival time is 1/λ)
-# μ = λ / (c * 0.9) # service rate (mean service time is 1/μ) (single server)
-# adist = Exponential(1/λ) # arrival distribution
-# sdist = Exponential(1/μ) # service distribution (single server)
-# timelimit = 10_000 # time limit for simulation
-# seed = 8610 # rng seed
-# cmax = 19
-# ncust = 50 # total number of customers generated
-# s2 = Sim(ncust, timelimit, seed)
-# q2 = Queue(c, adist, sdist)
-# df1 = runsimLCFS(s2, q2) |> disorderLCFS
-# A1, D1 = df1[:atime], df1[:dmeas]
-# lcfsorder, dfl = lcfs(df1, :dmeas)
-# (cvar1, cunf1, VS1) = c_var_unf_LCFS(df1, A1, D1, cmax)
-# chat = c_order_LCFS(lcfsorder)
-#
-# ests2 = zeros(Int,49,3)
-# vals = collect(20:20:980)
-# for (ind, ncust) in enumerate(vals)
-#     s2 = Sim(ncust, timelimit, seed)
-#     q2 = Queue(c, adist, sdist)
-#     df1 = runsimLCFS(s2, q2)
-#     A1, D1 = df1[:atime], df1[:dtime]
-#     lcfsorder, dfl = lcfs(df1, :dtime)
-#     (cvar1, cunf1, VS1) = c_var_unf_LCFS(df1, A1, D1, cmax)
-#     chat = c_order_LCFS(lcfsorder)
-#     ests2[ind,:] = [chat cvar1 cunf1]
-# end
-# plot(ests2)
-#
-# ests3 = zeros(Int,49,3)
-# vals = collect(20:20:980)
-# for (ind, ncust) in enumerate(vals)
-#     s2 = Sim(ncust, timelimit, seed)
-#     q2 = Queue(c, adist, sdist)
-#     df = runsimLCFS(s2, q2)
-#     df1 = disorderLCFS(df)
-#     A1, D1 = df1[:atime], df1[:dtime]
-#     lcfsorder, dfl = lcfs(df1, :dtime)
-#     (cvar1, cunf1, VS1) = c_var_unf_LCFS(df1, A1, D1, cmax)
-#     chat = c_order_LCFS(lcfsorder)
-#     ests3[ind,:] = [chat cvar1 cunf1]
-# end
-#
-# ests4 = zeros(Int,49,3)
-# vals = collect(20:20:980)
-# s2 = Sim(1000, timelimit, seed)
-# q2 = Queue(c, adist, sdist)
-# df = runsimLCFS(s2, q2)
-# df1 = disorderLCFS(df)
-# for (ind, lim) in enumerate(vals)
-#     A1, D1 = df1[:atime][1:lim], df1[:dtime][1:lim]
-#     lcfsorder, dfl = lcfs(df1[1:lim,:], :dtime)
-#     (cvar1, cunf1, VS1) = c_var_unf_LCFS(df1[1:lim,:], A1[1:lim], D1[1:lim], cmax)
-#     chat = c_order_LCFS(lcfsorder)
-#     ests4[ind,:] = [chat cvar1 cunf1]
-# end
-#
-# ests5 = zeros(Int,49,3)
-# vals = collect(20:20:980)
-# for (ind, ncust) in enumerate(vals)
-#     s2 = Sim(ncust, timelimit, seed)
-#     q2 = Queue(c, adist, sdist)
-#     df = runsim(s2, q2)
-#     df1 = disorder(df, c)
-#     A1, D1 = df1[:Arrive], df1[:Depart]
-#     (cvar1, cunf1, VS1) = c_var_unf(A1, D1, cmax)
-#     outorder1 = sort(df1, :DepartOrder)[:ArriveOrder]
-#     chat = c_order(outorder1)
-#     ests5[ind,:] = [chat cvar1 cunf1]
-# end
-#
-# ests6 = zeros(Int,49,3)
-# vals = collect(20:20:980)
-# for (ind, ncust) in enumerate(vals)
-#     s2 = Sim(ncust, timelimit, seed)
-#     q2 = Queue(c, adist, sdist)
-#     df = runsim(s2, q2)
-#     df1 = disorder(df, c)
-#     A1, D1 = df1[:Arrive], df1[:DepartMeas]
-#     (cvar1, cunf1, VS1) = c_var_unf(A1, D1, cmax)
-#     outorder1 = sort(df1, :DepartMeas)[:ArriveOrder]
-#     chat = c_order(outorder1)
-#     ests6[ind,:] = [chat cvar1 cunf1]
-# end
-#
-#
-#
-# # Test for fixed inference for original convergence
-# using BenchmarkTools
-# using Base.Test
-# include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
