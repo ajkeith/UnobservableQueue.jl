@@ -1,7 +1,6 @@
 include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
 using Base.Test
 using Distributions
-# using Plots; gr()
 
 @testset "Unobservable Queue" begin
     @testset "Queue Simulation" begin
