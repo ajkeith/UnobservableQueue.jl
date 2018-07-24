@@ -82,7 +82,7 @@ function disorder(simout::DataFrame, num_servers::Int64)
   end
   len = size(D_raw, 1)
   D_raw_meas = zeros(len) # measure error in depart times (original order)
-  D_raw_meas[1] = D_raw[1] / 2 + rand() * mean(D_raw[1:2]) - D_raw[1] / 2
+  D_raw_meas[1] = D_raw[1] / 2 + rand() * (mean(D_raw[1:2]) - D_raw[1] / 2)
   D_raw_meas[len] = D_raw[len]
   for i = 2:(len - 1)
     a = mean(D_raw[(i-1):i])
