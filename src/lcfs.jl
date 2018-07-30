@@ -162,6 +162,7 @@ function convergenceLCFS(param_inf::Paraminf, indrun::Int)
     lim = param_inf.max_servers + 1
     n_methods = param_inf.n_methods
     obs_max = param_inf.obs_max
+    time_limit = param_inf.time_limit
     window = param_inf.window
     step = param_inf.step
     ϵ = param_inf.ϵ
@@ -218,6 +219,7 @@ function esterrorLCFS(param_inf::Paraminf, indrun::Int)
     window_detail = param_inf.window_detail
     n_methods = param_inf.n_methods
     max_servers = param_inf.max_servers
+    time_limit = param_inf.time_limit
     ind_l = Int64(obs_limit)
     ind_u = Int64(obs_limit  + window_detail - 1)
     detail_true = zeros(Int64, window_detail, n_methods) - 1 # precise c estimates

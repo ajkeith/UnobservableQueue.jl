@@ -1,4 +1,4 @@
-using Base.Test, Distributions
+using Base.Test, Distributions, DataFrames
 using UnobservableQueues
 const UQ = UnobservableQueues
 

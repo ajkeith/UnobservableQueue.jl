@@ -1,5 +1,8 @@
-# UnobservableQueue.jl
+# UnobservableQueues.jl
 Order-based estimation algorithm for unobservable queues
+
+## Installation
+`Pkg.clone("https://github.com/ajkeith/UnobservableQueues.jl")`
 
 ## Algorithm
 The order-based estimation algorithm is implemented in src/estimators.jl. This file also includes our implementation of the variance estimator due to Park, Kim & Willemain (2011). The LCFS versions are in src/lcfs.jl.
