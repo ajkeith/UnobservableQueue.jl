@@ -1,6 +1,6 @@
-include("C:\\Users\\op\\Documents\\Julia Projects\\UnobservableQueue.jl\\src\\UnobservableQueue.jl")
-using Base.Test
-using Distributions
+using Base.Test, Distributions
+using UnobservableQueues
+const UQ = UnobservableQueues
 
 @testset "Unobservable Queue" begin
     @testset "Queue Simulation" begin
@@ -13,9 +13,9 @@ using Distributions
         ncust = 10_000 # total number of customers generated
         timelimit = 1_000 # time limit for simulation
         seed = 8710 # rng seed
-        s1 = Sim(ncust, timelimit, seed)
-        q1 = Queue(c, adist, sdist)
-        df1 = runsim(s1, q1)
+        s1 = UQ.Sim(ncust, timelimit, seed)
+        q1 = UQ.Queue(c, adist, sdist)
+        df1 = UQ.runsim(s1, q1)
         @test mean(df1[:dtime] - df1[:stime]) ≈ (1 / μ) atol = 0.1
         @test df1[:atime] |> diff |> mean ≈ (1 / λ) atol = 0.1
         @test all(diff(df1[:atime]) .> 0)
@@ -31,9 +31,9 @@ using Distributions
         ncust = 10_000 # total number of customers generated
         timelimit = 10_000 # time limit for simulation
         seed = 3001 # rng seed
-        s2 = Sim(ncust, timelimit, seed)
-        q2 = Queue(c, adist, sdist)
-        df2 = runsim(s2, q2)
+        s2 = UQ.Sim(ncust, timelimit, seed)
+        q2 = UQ.Queue(c, adist, sdist)
+        df2 = UQ.runsim(s2, q2)
         @test mean(df2[:dtime] - df2[:stime]) ≈ mean(rand(sdist, 10_000)) atol = 100
         @test df2[:atime] |> diff |> mean ≈ mean(rand(adist, 10_000)) atol = 100
         @test all(diff(df2[:atime]) .> 0)
@@ -50,10 +50,10 @@ using Distributions
         ncust = 10_000 # total number of customers generated
         timelimit = 1_000 # time limit for simulation
         seed = 8710 # rng seed
-        s1 = Sim(ncust, timelimit, seed)
-        q1 = Queue(c, adist, sdist)
-        df1 = runsim(s1, q1)
-        noiseout = disorder(df1, 2)
+        s1 = UQ.Sim(ncust, timelimit, seed)
+        q1 = UQ.Queue(c, adist, sdist)
+        df1 = UQ.runsim(s1, q1)
+        noiseout = UQ.disorder(df1, 2)
         @test count(noiseout[:DepartOrderErr] - noiseout[:DepartOrder] .== 0.0) / size(noiseout,1) ≈ 0.9 atol = 0.1
         @test all(sort(noiseout, :DepartMeas)[:DepartOrder] .== collect(1:size(noiseout,1)))
         @test all(sort(noiseout, :DepartMeas)[:DepartOrder] .== sort(noiseout, :Depart)[:DepartOrder])
@@ -61,7 +61,7 @@ using Distributions
         # Deltamax algorithm
         o1 = [1,2,3,5,4]
         o2 = [1,3,6,5,4]
-        @test c_deltamax(o1) == 2 && c_deltamax(o2) == 3
+        @test UQ.c_deltamax(o1) == 2 && UQ.c_deltamax(o2) == 3
 
         # Order-based algorithm
         c = 15 # number of servers
@@ -73,27 +73,27 @@ using Distributions
         ncust = 10_000 # total number of customers generated
         timelimit = 10_000 # time limit for simulation
         seed = 3001 # rng seed
-        s2 = Sim(ncust, timelimit, seed)
-        q2 = Queue(c, adist, sdist)
-        df2 = runsim(s2, q2)
+        s2 = UQ.Sim(ncust, timelimit, seed)
+        q2 = UQ.Queue(c, adist, sdist)
+        df2 = UQ.runsim(s2, q2)
         outorder1 = sort(df1, :dorder)[:aorder]
         outorder2 = sort(df2, :dorder)[:aorder]
         outorder3 = randperm(1_000)
-        @test c_order(outorder3) == c_order_slow(outorder3)
-        @test c_order([1,3,5]) == 3
-        @test c_order(outorder1) == 2
+        @test UQ.c_order(outorder3) == UQ.c_order_slow(outorder3)
+        @test UQ.c_order([1,3,5]) == 3
+        @test UQ.c_order(outorder1) == 2
 
         # Variance and Uninformed algorithms
         cmax = 19
         A1, A2 = df1[:atime][1:1000], df2[:atime][1:1000]
         D1, D2 = df1[:dtime][1:1000], df2[:dtime][1:1000]
-        (cvar1, cunf1, VS1) = c_var_unf(A1, D1, cmax)
-        (cvar2, cunf2, VS2) = c_var_unf(A2, D2, cmax)
+        (cvar1, cunf1, VS1) = UQ.c_var_unf(A1, D1, cmax)
+        (cvar2, cunf2, VS2) = UQ.c_var_unf(A2, D2, cmax)
         @test cvar1 == 2 && cunf1 == 2
 
         # Build distributions
-        (adist, sdist) = builddist(2, "Uniform", "LogNormal", 0.99)
-        (adist2, sdist2) = builddist(15, "Exponential", "Beta", 0.9)
+        (adist, sdist) = UQ.builddist(2, "Uniform", "LogNormal", 0.99)
+        (adist2, sdist2) = UQ.builddist(15, "Exponential", "Beta", 0.9)
         @test (1/mean(adist)) / (2 * (1/mean(sdist))) ≈ 0.99 atol = 0.0001
         @test (1/mean(adist2)) / (15 * (1/mean(sdist2))) ≈ 0.9 atol = 0.0001
     end
@@ -113,7 +113,7 @@ using Distributions
         step = 20 # how many observations to skip while calculating convergence
         seed = 8710
         param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
-        (conv, conv_meas, ests, ests_meas) = convergence(param_inf,1)
+        (conv, conv_meas, ests, ests_meas) = UQ.convergence(param_inf,1)
         @test (conv[1] > 0) && (conv[1] < 400) && ((conv[2] == 0) || conv[2] > conv[1])
         @test (conv[1] == conv_meas[1]) && (conv_meas[2] == 0)
 
@@ -132,7 +132,7 @@ using Distributions
         step = 20 # how many observations to skip while calculating convergence
         seed = 8710
         param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
-        (err, err_meas, detail, detail_meas) = esterror(param_inf, 3)
+        (err, err_meas, detail, detail_meas) = UQ.esterror(param_inf, 3)
         @test err[1] == 0 && err[2] >= 1
         @test err_meas[1] == 0 && err_meas[2] >= err[2]
 
@@ -169,11 +169,11 @@ end
     ncust = 10_000 # total number of customers generated
     timelimit = 10_000 # time limit for simulation
     seed = 3001 # rng seed
-    s2 = Sim(ncust, timelimit, seed)
-    q2 = Queue(c, adist, sdist)
-    df = runsimLCFS(s2, q2)
-    lcfsorder, dfl = lcfs(df, :dtime)
-    chat = c_order_LCFS(lcfsorder)
+    s2 = UQ.Sim(ncust, timelimit, seed)
+    q2 = UQ.Queue(c, adist, sdist)
+    df = UQ.runsimLCFS(s2, q2)
+    lcfsorder, dfl = UQ.lcfs(df, :dtime)
+    chat = UQ.c_order_LCFS(lcfsorder)
     @test chat == c
 
     # LCFS Variance, Uninformed algorithm
@@ -186,11 +186,11 @@ end
     timelimit = 10_000 # time limit for simulation
     seed = 1302 # rng seed
     cmax = 19
-    s2 = Sim(ncust, timelimit, seed)
-    q2 = Queue(c, adist, sdist)
-    df1 = runsimLCFS(s2, q2)
+    s2 = UQ.Sim(ncust, timelimit, seed)
+    q2 = UQ.Queue(c, adist, sdist)
+    df1 = UQ.runsimLCFS(s2, q2)
     A1, D1 = df1[:atime], df1[:dtime]
-    (cvar1, cunf1, VS1) = c_var_unf_LCFS(df1, A1, D1, cmax)
+    (cvar1, cunf1, VS1) = UQ.c_var_unf_LCFS(df1, A1, D1, cmax)
     @test cvar1 == c
     @test cunf1 == c
 
@@ -198,8 +198,8 @@ end
     df = DataFrame()
     df[:dtime] = [1.1,1.2,1.3,1.4,1.5,1.6]
     df[:nd] = [1,2,3,4,5,6]
-    @test firstdepart(df, 5, 1.2) == 1.5
-    @test firstdepart(df, 5, 1.6) == 1.6
+    @test UQ.firstdepart(df, 5, 1.2) == 1.5
+    @test UQ.firstdepart(df, 5, 1.6) == 1.6
 
     # LCFS Introduce observation error into true data
     c = 2 # number of servers
@@ -210,10 +210,10 @@ end
     ncust = 10_000 # total number of customers generated
     timelimit = 1_000 # time limit for simulation
     seed = 8710 # rng seed
-    s1 = Sim(ncust, timelimit, seed)
-    q1 = Queue(c, adist, sdist)
-    df1 = runsimLCFS(s1, q1)
-    noiseout = disorderLCFS(df1)
+    s1 = UQ.Sim(ncust, timelimit, seed)
+    q1 = UQ.Queue(c, adist, sdist)
+    df1 = UQ.runsimLCFS(s1, q1)
+    noiseout = UQ.disorderLCFS(df1)
     @test all(sort(noiseout, :dmeas)[:dorder] .== collect(1:size(noiseout,1)))
     @test all(sort(noiseout, :dmeas)[:dorder] .== sort(noiseout, :dtime)[:dorder])
 
@@ -231,7 +231,7 @@ end
     step = 20 # how many observations to skip while calculating convergence
     seed = 8710
     param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
-    @time (conv, conv_meas, ests, ests_meas) = convergenceLCFS(param_inf,1)
+    @time (conv, conv_meas, ests, ests_meas) = UQ.convergenceLCFS(param_inf,1)
     @test (conv[1] > 0) && (conv[1] < 400) && ((conv[2] == 0) || conv[2] >= conv[1])
     @test (conv[1] == conv_meas[1]) && (conv_meas[2] >= conv_meas[1])
 
@@ -250,7 +250,7 @@ end
     step = 20 # how many observations to skip while calculating convergence
     seed = 8710
     param_inf = Paraminf(settings, n_runs, n_methods, max_servers, obs_max, time_limit, ϵ, window, window_detail, step, seed)
-    @time (err, err_meas, detail, detail_meas) = esterrorLCFS(param_inf, 3)
+    @time (err, err_meas, detail, detail_meas) = UQ.esterrorLCFS(param_inf, 3)
     @test err[1] < err[2]
     @test err_meas[1] < err_meas[2]
 
