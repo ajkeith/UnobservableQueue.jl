@@ -1,4 +1,7 @@
 # UnobservableQueues.jl
+[![Build Status](https://travis-ci.org/ajkeith/UnobservableQueues.jl.svg?branch=master)](https://travis-ci.org/JuliaPOMDP/UnobservableQueues.jl)
+[![Coverage Status](https://coveralls.io/repos/github/ajkeith/UnobservableQueues.jl/badge.svg?branch=master)](https://coveralls.io/github/ajkeith/UnobservableQueues.jl?branch=master)
+
 Order-based estimation algorithm for unobservable queues
 
 ## Installation
