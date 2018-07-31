@@ -1,7 +1,7 @@
 """
 A basic implementation of the order-based algorithm for queues with unobservable service.
 """
-module UnobservableQueues
+module UnobservableQueue
 
 using SimJulia, ResumableFunctions
 using Distributions, DataFrames, StatsBase

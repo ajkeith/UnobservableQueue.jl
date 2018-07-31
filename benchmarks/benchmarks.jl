@@ -1,6 +1,6 @@
 using BenchmarkTools
-using UnobservableQueues
-const UQ = UnobservableQueues
+using UnobservableQueue
+const UQ = UnobservableQueue
 
 c = 7 # number of servers
 λ = 0.99 # arrival rate (mean interarrival time is 1/λ)

@@ -1,6 +1,6 @@
 using Base.Test, Distributions, DataFrames
-using UnobservableQueues
-const UQ = UnobservableQueues
+using UnobservableQueue
+const UQ = UnobservableQueue
 
 @testset "Unobservable Queue" begin
     @testset "Queue Simulation" begin

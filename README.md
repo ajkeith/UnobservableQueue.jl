@@ -2,12 +2,12 @@
 
 | **`Linux`** | **`Windows`** | **`Coverage`** |
 |-----------------|---------------------|---------------------|
-| [![Build Status](https://travis-ci.org/ajkeith/UnobservableQueues.jl.svg?branch=master)](https://travis-ci.org/JuliaPOMDP/UnobservableQueues.jl) | [![Build status](https://ci.appveyor.com/api/projects/status/6t1b3xel2ilwfo3r?svg=true)](https://ci.appveyor.com/project/ajkeith/unobservablequeues-jl) | [![Coverage Status](https://coveralls.io/repos/github/ajkeith/UnobservableQueues.jl/badge.svg?branch=master)](https://coveralls.io/github/ajkeith/UnobservableQueues.jl?branch=master) |
+| [![Build Status](https://travis-ci.org/ajkeith/UnobservableQueue.jl.svg?branch=master)](https://travis-ci.org/JuliaPOMDP/UnobservableQueue.jl) | [![Build status](https://ci.appveyor.com/api/projects/status/6t1b3xel2ilwfo3r?svg=true)](https://ci.appveyor.com/project/ajkeith/unobservablequeue-jl) | [![Coverage Status](https://coveralls.io/repos/github/ajkeith/UnobservableQueue.jl/badge.svg?branch=master)](https://coveralls.io/github/ajkeith/UnobservableQueue.jl?branch=master) |
 
 Order-based estimation algorithm for unobservable queues
 
 ## Installation
-`Pkg.clone("https://github.com/ajkeith/UnobservableQueues.jl")`
+`Pkg.clone("https://github.com/ajkeith/UnobservableQueue.jl")`
 
 ## Algorithm
 The order-based estimation algorithm is implemented in src/estimators.jl. This file also includes our implementation of the variance estimator due to Park, Kim & Willemain (2011). The LCFS versions are in src/lcfs.jl.
