@@ -1,4 +1,4 @@
-# UnobservableQueues.jl
+# UnobservableQueue.jl
 
 | **`Linux`** | **`Windows`** | **`Coverage`** |
 |-----------------|---------------------|---------------------|
