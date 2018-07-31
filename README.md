@@ -1,6 +1,8 @@
 # UnobservableQueues.jl
-[![Build Status](https://travis-ci.org/ajkeith/UnobservableQueues.jl.svg?branch=master)](https://travis-ci.org/JuliaPOMDP/UnobservableQueues.jl)
-[![Coverage Status](https://coveralls.io/repos/github/ajkeith/UnobservableQueues.jl/badge.svg?branch=master)](https://coveralls.io/github/ajkeith/UnobservableQueues.jl?branch=master)
+
+| **`Linux`** | **`Windows`** | **`Coverage`** |
+|-----------------|---------------------|---------------------|
+| [![Build Status](https://travis-ci.org/ajkeith/UnobservableQueues.jl.svg?branch=master)](https://travis-ci.org/JuliaPOMDP/UnobservableQueues.jl) | [![Build status](https://ci.appveyor.com/api/projects/status/6t1b3xel2ilwfo3r?svg=true)](https://ci.appveyor.com/project/ajkeith/unobservablequeues-jl) | [![Coverage Status](https://coveralls.io/repos/github/ajkeith/UnobservableQueues.jl/badge.svg?branch=master)](https://coveralls.io/github/ajkeith/UnobservableQueues.jl?branch=master) |
 
 Order-based estimation algorithm for unobservable queues
 
