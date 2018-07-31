@@ -51,4 +51,4 @@ These data files use older versions of the code.
 - *conv_meas2.csv*: convergence with 200 obs requirement and measurement error, with column order of order-based, variance, uninformed
 
 ## Primary References
-Park, J., Kim, Y. B. Y. B., & Willemain, T. R. T. R. (2011). Analysis of an unobservable queue using arrival and departure times. Computers and Industrial Engineering, 61(3), 842–847. https://doi.org/10.1016/j.cie.2011.05.017
+Park, J., Kim, Y. B., & Willemain, T. R. (2011). Analysis of an unobservable queue using arrival and departure times. Computers and Industrial Engineering, 61(3), 842–847. https://doi.org/10.1016/j.cie.2011.05.017
