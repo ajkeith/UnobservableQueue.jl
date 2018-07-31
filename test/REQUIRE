@@ -1,2 +1,5 @@
 Distributions
 DataFrames
+SimJulia
+ResumableFunctions
+StatsBase
