@@ -52,3 +52,21 @@ These data files use older versions of the code.
 
 ## Primary References
 Park, J., Kim, Y. B., & Willemain, T. R. (2011). Analysis of an unobservable queue using arrival and departure times. Computers and Industrial Engineering, 61(3), 842–847. https://doi.org/10.1016/j.cie.2011.05.017
+
+## Citing UnobservableQueue.jl
+If this code is useful to you, please cite [this paper](https://www.sciencedirect.com/science/article/abs/pii/S0360835219300099#ec-research-data):
+
+```
+@article{keith2019order,
+title = "An order-based method for robust queue inference with stochastic arrival and departure times",
+author = "Andrew Keith and Darryl Ahner and Raymond Hill",
+journal = "Computers & Industrial Engineering",
+volume = "128",
+pages = "711 - 726",
+year = "2019",
+issn = "0360-8352",
+doi = "https://doi.org/10.1016/j.cie.2019.01.005",
+url = "http://www.sciencedirect.com/science/article/pii/S0360835219300099",
+keywords = "Queueing, Queue inference, Robust, Unobservable"
+}
+```
